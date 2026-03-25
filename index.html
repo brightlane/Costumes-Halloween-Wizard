@@ -45,29 +45,46 @@
 </script>
 
 <style>
+/* Basic body + fonts */
 body {font-family:'Segoe UI', Arial, sans-serif; margin:0; padding:0; background:#111; color:#eee; line-height:1.6;}
-header {background: linear-gradient(135deg,#ff4500,#ff8c00); color:#111; padding:40px 20px; text-align:center; border-bottom:4px solid #cc0000;}
+a {transition:0.2s;}
+a:hover {opacity:0.9;}
+
+/* Header */
+header {background: linear-gradient(135deg,#ff4500,#ff8c00); color:#111; padding:40px 20px; text-align:center; border-bottom:4px solid #cc0000; position:relative;}
 header h1 {margin:0 0 10px;font-size:2.5em;}
 header h1 a {color:#111;text-decoration:none;}
-header p {font-size:1.2em;}
+header p {font-size:1.2em;margin-bottom:20px;}
+#ghost-image {display:block; margin:0 auto; width:300px; border-radius:20px; box-shadow:0 0 20px #ff8c00;}
+
+/* Navigation */
 nav {background:#1a1a1a; display:flex; justify-content:center; flex-wrap:wrap; padding:12px 0;}
-nav a {color:#ff8c00; margin:6px 15px; font-weight:bold; padding:6px 10px; border-radius:4px; text-decoration:none;}
+nav a {color:#ff8c00; margin:6px 15px; font-weight:bold; padding:8px 12px; border-radius:6px; text-decoration:none;}
 nav a:hover {background:#cc0000;color:#fff;}
-section {max-width:1200px; margin:40px auto; padding:20px; background:#222; border-radius:10px;}
+
+/* Sections */
+section {max-width:1200px; margin:40px auto; padding:20px; background:#222; border-radius:12px; box-shadow:0 0 15px #000;}
 h2,h3 {color:#ff8c00;margin-bottom:12px;}
 ul {list-style:none;padding-left:0;}
 ul li {margin:6px 0;}
+
+/* Keyword Cloud */
 .keyword-cloud {display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:10px;}
 .keyword-cloud span {display:inline-block; padding:10px 15px; background:#cc0000; color:#fff; border-radius:12px; font-weight:bold; transition: transform 0.2s, background 0.2s;}
 .keyword-cloud span a {color:#fff;}
 .keyword-cloud span:hover {background:#ff8c00; color:#111; transform:scale(1.1);}
-.daily-tip, .testimonial {background:#333; padding:15px 20px; border-left:5px solid #ff8c00; margin:10px 0; border-radius:5px;}
+
+/* Tips & Testimonials */
+.daily-tip, .testimonial {background:#333; padding:20px; border-left:6px solid #ff8c00; margin:15px 0; border-radius:8px; font-size:1em;}
 table {width:100%; border-collapse:collapse; margin:20px 0;}
-th,td {padding:12px; border:1px solid #444;}
+th,td {padding:14px; border:1px solid #444;}
 th {background:#444; color:#ff8c00;}
-#ghost-image {display:block; margin:0 auto 20px; width:200px;}
-footer {background:#1a1a1a; text-align:center; padding:20px; font-size:0.9em; color:#ccc;}
-@media(max-width:768px){ nav{flex-direction:column;} }
+
+/* Footer */
+footer {background:#1a1a1a; text-align:center; padding:25px; font-size:0.95em; color:#ccc;}
+
+/* Responsive */
+@media(max-width:768px){ nav{flex-direction:column;} #ghost-image{width:220px;}}
 </style>
 </head>
 
@@ -76,7 +93,7 @@ footer {background:#1a1a1a; text-align:center; padding:20px; font-size:0.9em; co
 <header>
 <h1><a href="https://www.linkconnector.com/ta.php?lc=007949060108004909&atid=WebJallowenCostumesWeb" rel="nofollow sponsored">HalloweenCostumes.com – Ultimate 2026 Costumes</a></h1>
 <p>Your one-stop shop for top Halloween costumes, accessories & decorations!</p>
-<img id="ghost-image" src="https://images.unsplash.com/photo-1612210996797-1e8a995c8676?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200" alt="Ghost Costume">
+<img id="ghost-image" src="https://images.unsplash.com/photo-1612210996797-1e8a995c8676?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Spooky Ghost Costume">
 </header>
 
 <nav>
