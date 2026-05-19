@@ -513,6 +513,129 @@ Sitemap: {SITE_URL}/sitemap.xml
 
 
 # =========================================================
+# BLOG ENGINE
+# =========================================================
+
+BLOG_ARTICLES = [
+    {
+        "slug":        "best-halloween-costumes-2026",
+        "title":       f"Best Halloween Costumes {YEAR}",
+        "description": f"Top Halloween costume trends for {YEAR} — the ultimate guide.",
+        "body":        f"<p>Looking for the best Halloween costumes in {YEAR}? From viral pop-culture characters to classic horror icons, this year's selection is the biggest ever. Whether you want scary, funny, sexy or group costumes, our full guide covers every trend, budget, and age group.</p>",
+        "merchant":    "/",
+    },
+    {
+        "slug":        "cheap-costumes-under-20",
+        "title":       "Cheap Halloween Costumes Under $20",
+        "description": "Budget Halloween costume ideas that look great without breaking the bank.",
+        "body":        "<p>You don't need to spend a fortune to have an amazing Halloween costume. We've rounded up the best cheap Halloween costumes under $20 — all available online with fast shipping. From funny one-liners to classic characters, these budget picks deliver serious impact.</p>",
+        "merchant":    "/cheap-halloween-costumes.html",
+    },
+    {
+        "slug":        "kids-halloween-guide",
+        "title":       f"Kids Halloween Costume Guide {YEAR}",
+        "description": f"Safe, comfortable and adorable kids Halloween costumes for {YEAR}.",
+        "body":        f"<p>Picking the perfect Halloween costume for your child in {YEAR}? Our kids' guide covers safety tips, sizing advice, trending characters, and the best costumes for every age — from infants and toddlers all the way up to tweens.</p>",
+        "merchant":    "/kids-halloween-costumes.html",
+    },
+    {
+        "slug":        "scary-costume-ideas",
+        "title":       f"Scary Halloween Costume Ideas {YEAR}",
+        "description": f"The scariest Halloween costumes for {YEAR} — horror, gore, and creepy classics.",
+        "body":        f"<p>Ready to terrify? Our scary Halloween costume roundup for {YEAR} covers the most chilling options available — from classic horror movie monsters to creepy clowns, zombies, demons, and beyond. These are the costumes that will haunt the night.</p>",
+        "merchant":    "/scary-halloween-costumes.html",
+    },
+    {
+        "slug":        "couples-costumes",
+        "title":       f"Couples Halloween Costumes {YEAR}",
+        "description": f"The best matching couples Halloween costumes for {YEAR}.",
+        "body":        f"<p>Halloween is more fun with a partner! Our couples costume guide for {YEAR} features the best matching sets — from classic duos and pop-culture pairs to funny couples, horror double-acts, and themed group expansions. Shop the full collection and arrive as a duo to remember.</p>",
+        "merchant":    "/couples-halloween-costumes.html",
+    },
+]
+
+
+def build_blog():
+    blog_dir = os.path.join(OUTPUT_DIR, "blog")
+    os.makedirs(blog_dir, exist_ok=True)
+
+    # ── Blog index ──────────────────────────────────────────
+    items = "\n".join(
+        f'<li><a href="{a["slug"]}.html">{a["title"]}</a> — {a["description"]}</li>'
+        for a in BLOG_ARTICLES
+    )
+    index_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halloween Costume Blog | {SITE_NAME}</title>
+  <meta name="description" content="Halloween costume tips, guides, and ideas for {YEAR}.">
+  <link rel="canonical" href="{SITE_URL}/blog/index.html">
+  <style>{SHARED_CSS}</style>
+</head>
+<body>
+  <header>
+    <h1>🎃 {SITE_NAME}</h1>
+    <p>Halloween Costume Blog</p>
+  </header>
+  <main>
+    <h1>Halloween Costume Blog {YEAR}</h1>
+    <p>Tips, guides, and costume ideas for {YEAR}.</p>
+    <ul>{items}</ul>
+    <p><a href="../index.html">← Back to Main Store</a></p>
+  </main>
+  <footer>
+    <p>&copy; {YEAR} {OWNER} | Affiliate Platform Portfolio | Powered by Vulture Engine</p>
+  </footer>
+</body>
+</html>"""
+
+    with open(os.path.join(blog_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(index_html)
+    print("  ✔  blog/index.html")
+
+    # ── Blog posts ──────────────────────────────────────────
+    for a in BLOG_ARTICLES:
+        cta_url = aff(a.get("merchant", "/"))
+        post_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{a['title']} | {SITE_NAME}</title>
+  <meta name="description" content="{a['description']}">
+  <link rel="canonical" href="{SITE_URL}/blog/{a['slug']}.html">
+  <style>{SHARED_CSS}</style>
+</head>
+<body>
+  <header>
+    <h1>🎃 {SITE_NAME}</h1>
+    <p>The World's #1 Halloween Store</p>
+  </header>
+  <main>
+    <h1>{a['title']}</h1>
+    {a['body']}
+    <center>
+      <a href="{cta_url}" class="cta-btn" target="_blank" rel="nofollow noopener">
+        Shop {a['title']} ➔
+      </a>
+    </center>
+    <p style="margin-top:2rem;"><a href="index.html">← Back to Blog</a> &nbsp;|&nbsp; <a href="../index.html">🏠 Main Store</a></p>
+  </main>
+  <footer>
+    <p>&copy; {YEAR} {OWNER} | Affiliate Platform Portfolio | Powered by Vulture Engine</p>
+    <p style="font-size:.75rem;color:#bbb;">This site contains affiliate links. We earn a commission when you purchase through our links, at no extra cost to you.</p>
+  </footer>
+</body>
+</html>"""
+
+        with open(os.path.join(blog_dir, f"{a['slug']}.html"), "w", encoding="utf-8") as f:
+            f.write(post_html)
+        print(f"  ✔  blog/{a['slug']}.html")
+
+
+# =========================================================
 # MAIN PIPELINE
 # =========================================================
 
@@ -528,6 +651,10 @@ def build_all():
         with open(path, "w", encoding="utf-8") as f:
             f.write(html)
         print(f"  ✔  {page['filename']}")
+
+    # Blog
+    print("\n📝 Building blog...")
+    build_blog()
 
     # SEO files
     with open(os.path.join(OUTPUT_DIR, "sitemap.xml"), "w", encoding="utf-8") as f:
