@@ -1,321 +1,65 @@
 import os
-import re
-
-from jinja2 import (
-    Environment,
-    FileSystemLoader,
-    select_autoescape
-)
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 # =========================================================
-# TEMPLATE ENGINE CONFIG
+# TEMPLATE CONFIG (ROBUST PATH HANDLING)
+# =========================================================
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+if not os.path.exists(TEMPLATE_DIR):
+    raise FileNotFoundError(
+        f"[Renderer] Missing template directory: {TEMPLATE_DIR}\n"
+        "Expected structure:\n"
+        "core/templates/page.html"
+    )
+
+# =========================================================
+# JINJA ENV SETUP
 # =========================================================
 
 env = Environment(
-
-    loader=FileSystemLoader("templates"),
-
-    autoescape=select_autoescape([
-        "html",
-        "xml"
-    ]),
-
-    trim_blocks=True,
-
-    lstrip_blocks=True
+    loader=FileSystemLoader(TEMPLATE_DIR),
+    autoescape=select_autoescape(["html", "xml"])
 )
 
 # =========================================================
-# GLOBAL TEMPLATE HELPERS
+# CORE RENDER FUNCTION
 # =========================================================
 
-def money(value):
-
-    return f"${value:,.2f}"
-
-env.filters["money"] = money
-
-# =========================================================
-# HTML MINIFIER
-# =========================================================
-
-def minify_html(html):
-
-    # remove comments
-    html = re.sub(
-        r"<!--.*?-->",
-        "",
-        html,
-        flags=re.DOTALL
-    )
-
-    # collapse whitespace
-    html = re.sub(
-        r">\s+<",
-        "><",
-        html
-    )
-
-    # collapse multi spaces
-    html = re.sub(
-        r"\s{2,}",
-        " ",
-        html
-    )
-
-    return html.strip()
-
-# =========================================================
-# TEMPLATE RENDERER
-# =========================================================
-
-def render(
-    template_name,
-    context=None,
-    minify=False
-):
+def render(template_name: str, context: dict) -> str:
     """
-    Render a template with context.
+    Render a Jinja template safely with debugging support.
     """
 
-    if context is None:
+    try:
+        template = env.get_template(template_name)
+    except Exception as e:
+        available = os.listdir(TEMPLATE_DIR)
 
-        context = {}
+        raise FileNotFoundError(
+            f"[Renderer] Template not found: {template_name}\n"
+            f"Available templates: {available}\n"
+            f"Expected path: {TEMPLATE_DIR}/{template_name}"
+        ) from e
 
-    template = env.get_template(
-        template_name
-    )
-
-    html = template.render(
-        **context
-    )
-
-    if minify:
-
-        html = minify_html(html)
-
-    return html
+    return template.render(**context)
 
 # =========================================================
-# FILE WRITER
+# PAGE WRAPPER (USED BY build.py)
 # =========================================================
 
-def ensure_directory(path):
-
-    os.makedirs(
-        path,
-        exist_ok=True
-    )
-
-def write_html(
-    output_path,
-    html,
-    minify=True
-):
+def render_page(template_name: str, output_path: str, context: dict):
     """
-    Writes HTML safely to disk.
+    Renders template and writes HTML output.
     """
 
-    directory = os.path.dirname(
-        output_path
-    )
+    html = render(template_name, context)
 
-    ensure_directory(directory)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    if minify:
-
-        html = minify_html(html)
-
-    with open(
-        output_path,
-        "w",
-        encoding="utf-8"
-    ) as f:
-
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
 
-# =========================================================
-# BULK PAGE RENDERER
-# =========================================================
-
-def render_page(
-    template_name,
-    output_path,
-    context
-):
-    """
-    Render + write helper.
-    """
-
-    html = render(
-        template_name,
-        context=context,
-        minify=True
-    )
-
-    write_html(
-        output_path,
-        html,
-        minify=False
-    )
-
-# =========================================================
-# SEO HELPERS
-# =========================================================
-
-def canonical_url(
-    site_url,
-    lang,
-    slug
-):
-
-    if slug == "index":
-
-        return f"{site_url}/{lang}/"
-
-    return f"{site_url}/{lang}/{slug}/"
-
-def hreflang_map(
-    site_url,
-    languages,
-    slug
-):
-
-    hreflangs = []
-
-    for lang in languages:
-
-        hreflangs.append({
-
-            "lang": lang,
-
-            "url": canonical_url(
-                site_url,
-                lang,
-                slug
-            )
-        })
-
-    return hreflangs
-
-# =========================================================
-# RELATED CONTENT ENGINE
-# =========================================================
-
-def related_pages(
-    pages,
-    current_slug,
-    limit=8
-):
-    """
-    Returns related pages excluding current page.
-    """
-
-    related = []
-
-    for page in pages:
-
-        if page["slug"] == current_slug:
-
-            continue
-
-        related.append({
-
-            "title": page["title"],
-
-            "slug": page["slug"]
-        })
-
-    return related[:limit]
-
-# =========================================================
-# SEARCH INDEX HELPER
-# =========================================================
-
-def build_search_record(
-    title,
-    url,
-    description=""
-):
-
-    return {
-
-        "title": title,
-
-        "url": url,
-
-        "description": description
-    }
-
-# =========================================================
-# RSS ITEM HELPER
-# =========================================================
-
-def build_rss_item(
-    title,
-    url,
-    description=""
-):
-
-    return {
-
-        "title": title,
-
-        "url": url,
-
-        "description": description
-    }
-
-# =========================================================
-# SAFE TEXT CLEANER
-# =========================================================
-
-def clean_text(text):
-
-    text = text.strip()
-
-    text = re.sub(
-        r"\s+",
-        " ",
-        text
-    )
-
-    return text
-
-# =========================================================
-# SLUGIFY
-# =========================================================
-
-def slugify(text):
-
-    text = text.lower()
-
-    text = re.sub(
-        r"[^a-z0-9\s-]",
-        "",
-        text
-    )
-
-    text = re.sub(
-        r"\s+",
-        "-",
-        text
-    )
-
-    return text.strip("-")
-
-# =========================================================
-# DEBUG TEST
-# =========================================================
-
-if __name__ == "__main__":
-
-    sample = render(
-        "base.html",
-        {
-            "title": "Test Page",
-            "description": "Testing renderer."
-        }
-    )
-
-    print(sample[:500])
+    print(f"✔ Rendered: {output_path}")
