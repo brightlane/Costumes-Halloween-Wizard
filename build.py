@@ -1,26 +1,10 @@
 import os
 from datetime import date
+from urllib.parse import quote
 
 from core.renderer import render_page
-from core.routes import slug_url
-
-from core.schema import (
-    website_schema,
-    organization_schema,
-    collection_schema
-)
-
-from core.seo import (
-    canonical_url,
-    hreflang_tags,
-    build_title,
-    build_description
-)
-
-from core.blog_engine import (
-    generate_all_articles,
-    build_blog_index
-)
+from core.schema import website_schema, organization_schema, collection_schema
+from core.seo import canonical_url, hreflang_tags, build_title, build_description
 
 # =========================================================
 # CONFIG
@@ -29,77 +13,82 @@ from core.blog_engine import (
 SITE_URL = "https://brightlane.github.io/Costumes-Halloween-Wizard"
 OUTPUT_DIR = "dist"
 TODAY = str(date.today())
-
 SITE_NAME = "Halloween Costumes 2026"
 
-# =========================================================
-# CORE PAGES
-# =========================================================
-
-PAGES = [
+# IMPORTANT: SINGLE SOURCE OF TRUTH ROUTING TABLE
+ROUTES = [
     {
         "slug": "index",
         "title": "Halloween Costumes 2026",
-        "description": "The world's best Halloween costume collection",
-        "template": "page.html",
-        "content": "home"
+        "description": "The best Halloween costumes for 2026",
+        "primary_keyword": "halloween costumes"
     },
     {
-        "slug": "women",
+        "slug": "womens-costumes-2026",
         "title": "Women's Halloween Costumes 2026",
-        "description": "Top women's Halloween costumes",
-        "template": "page.html",
-        "content": "women"
+        "description": "Top trending women's costumes for Halloween 2026",
+        "primary_keyword": "women halloween costumes"
     },
     {
-        "slug": "men",
+        "slug": "mens-costumes-online",
         "title": "Men's Halloween Costumes 2026",
-        "description": "Top men's Halloween costumes",
-        "template": "page.html",
-        "content": "men"
+        "description": "Best men's Halloween costumes and ideas",
+        "primary_keyword": "mens halloween costumes"
     },
     {
-        "slug": "kids",
+        "slug": "kids-halloween-outfits",
         "title": "Kids Halloween Costumes 2026",
-        "description": "Best costumes for kids",
-        "template": "page.html",
-        "content": "kids"
+        "description": "Best kids Halloween costumes for all ages",
+        "primary_keyword": "kids halloween costumes"
+    },
+    {
+        "slug": "infant-baby-costumes",
+        "title": "Baby Halloween Costumes 2026",
+        "description": "Cute and safe baby Halloween costumes",
+        "primary_keyword": "baby halloween costumes"
     }
 ]
+
+# =========================================================
+# AFFILIATE SYSTEM (FORCE CONSISTENCY)
+# =========================================================
+
+AFFILIATE_ID = "your-affiliate-id"
+
+def affiliate_link(base_url: str, slug: str) -> str:
+    """
+    ALWAYS preserves affiliate tracking across all pages
+    """
+    return f"{base_url}/{slug}.html?aff={AFFILIATE_ID}"
+
+# =========================================================
+# SEO MESH SYSTEM (INTERNAL LINK GRAPH)
+# =========================================================
+
+def build_internal_links(current_slug: str):
+    links = []
+
+    for route in ROUTES:
+        if route["slug"] != current_slug:
+            links.append({
+                "label": route["title"],
+                "url": f"{route['slug']}.html?aff={AFFILIATE_ID}"
+            })
+
+    return links
 
 # =========================================================
 # OUTPUT HELPERS
 # =========================================================
 
 def output_path(slug):
+    if slug == "index":
+        return f"{OUTPUT_DIR}/index.html"
     return f"{OUTPUT_DIR}/{slug}.html"
+
 
 def ensure_dir():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-# =========================================================
-# SAFE CONTENT GENERATION (prevents broken landing pages)
-# =========================================================
-
-def build_content(page):
-    slug = page["slug"]
-
-    return f"""
-    <h1>{page['title']}</h1>
-
-    <p>{page['description']}</p>
-
-    <div class="seo-links">
-        <a href="{slug_url('index')}">🏠 Main Showcase</a><br>
-        <a href="{slug_url('women')}">👩 Women's Costumes</a><br>
-        <a href="{slug_url('men')}">👨 Men's Costumes</a><br>
-        <a href="{slug_url('kids')}">👶 Kids Costumes</a>
-    </div>
-
-    <a class="cta" href="{slug_url(slug)}">
-        Shop {page['title']} ➜
-    </a>
-    """
 
 # =========================================================
 # PAGE BUILDER
@@ -108,81 +97,65 @@ def build_content(page):
 def build_pages():
     ensure_dir()
 
-    for page in PAGES:
+    for page in ROUTES:
         slug = page["slug"]
 
-        url = canonical_url(SITE_URL, "en", slug)
+        canonical = canonical_url(SITE_URL, "en", slug)
+
+        internal_links = build_internal_links(slug)
 
         context = {
             "site_name": SITE_NAME,
             "title": build_title(page["title"]),
             "description": build_description(page["description"]),
-            "canonical": url,
+            "canonical": canonical,
 
+            # schemas
             "schema_website": website_schema(SITE_NAME, SITE_URL),
             "schema_org": organization_schema(SITE_NAME, SITE_URL),
             "schema_collection": collection_schema(
                 page["title"],
                 page["description"],
-                url
+                canonical
             ),
 
             "hreflang": hreflang_tags(SITE_URL, slug),
 
-            # IMPORTANT FIX: always safe HTML
-            "content": build_content(page)
+            # CORE CONTENT
+            "content": f"""
+                <h1>{page['title']}</h1>
+                <p>{page['description']}</p>
+
+                <h2>Recommended Vault Categories</h2>
+                <ul>
+                    {''.join([f"<li><a href='{link['url']}'>{link['label']}</a></li>" for link in internal_links])}
+                </ul>
+
+                <a href="{affiliate_link(SITE_URL, slug)}">
+                    Shop {page['title']} Deals ➜
+                </a>
+            """
         }
 
-        render_page(
-            page["template"],
-            output_path(slug),
-            context
-        )
+        render_page(page["template"], output_path(slug), context)
 
         print(f"✔ Built page: {slug}")
 
-    # ALWAYS GUARANTEE INDEX EXISTS (fixes your CI failure)
-    index_path = f"{OUTPUT_DIR}/index.html"
-    if not os.path.exists(index_path):
-        with open(index_path, "w", encoding="utf-8") as f:
-            f.write("<h1>Index fallback generated</h1>")
-
 # =========================================================
-# BLOG BUILDER
+# BLOG SAFE PLACEHOLDER (NO BREAKS)
 # =========================================================
 
 def build_blog():
-    articles = generate_all_articles()
-
     blog_dir = f"{OUTPUT_DIR}/blog"
     os.makedirs(blog_dir, exist_ok=True)
 
-    index_html = build_blog_index(articles)
-
     with open(f"{blog_dir}/index.html", "w", encoding="utf-8") as f:
-        f.write(index_html)
+        f.write("<h1>Blog Index</h1>")
 
-    for article in articles:
-        path = f"{blog_dir}/{article['slug']}.html"
-
-        html = f"""
-        <html>
-        <head>
-            <title>{article['title']}</title>
-            <meta name="description" content="{article['description']}">
-        </head>
-        <body>
-            <h1>{article['title']}</h1>
-            {article['body']}
-        </body>
-        </html>
-        """
-
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(html)
+    print("✔ Blog built (safe stub)")
 
 # =========================================================
-# GLOBAL SEO FILES
+# GLOBAL FILES
 # =========================================================
 
 def build_global_files():
@@ -190,14 +163,13 @@ def build_global_files():
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 """
 
-    for page in PAGES:
+    for page in ROUTES:
         url = canonical_url(SITE_URL, "en", page["slug"])
-
         sitemap += f"""
 <url>
     <loc>{url}</loc>
     <lastmod>{TODAY}</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
 </url>
 """
@@ -217,12 +189,14 @@ Sitemap: {SITE_URL}/sitemap.xml
     with open(f"{OUTPUT_DIR}/robots.txt", "w", encoding="utf-8") as f:
         f.write(robots)
 
+    print("✔ Global SEO files built")
+
 # =========================================================
 # MAIN PIPELINE
 # =========================================================
 
 def build_all():
-    print("🚀 Starting MASS SEO build system...")
+    print("🚀 Starting stable SEO build system...")
     build_pages()
     build_blog()
     build_global_files()
