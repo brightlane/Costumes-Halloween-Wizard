@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+
+    <meta name="description" content="{{ description }}">
+    <link rel="canonical" href="{{ canonical }}">
+
+    <!-- Schema -->
+    <script type="application/ld+json">
+    {{ schema_website | safe }}
+    </script>
+
+    <script type="application/ld+json">
+    {{ schema_org | safe }}
+    </script>
+
+    <script type="application/ld+json">
+    {{ schema_collection | safe }}
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        header {
+            background: #111;
+            color: #fff;
+            padding: 30px;
+            text-align: center;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+        }
+
+        nav a {
+            margin: 5px;
+            display: inline-block;
+            padding: 8px 12px;
+            background: #eee;
+            text-decoration: none;
+            color: #333;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background: #ff6600;
+            color: white;
+        }
+
+        .cta {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 25px;
+            background: #ff6600;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>{{ site_name }}</h1>
+    <p>{{ title }}</p>
+</header>
+
+<nav>
+    {{ hreflang | safe }}
+</nav>
+
+<main>
+    {{ content | safe }}
+
+    <br>
+
+    <a class="cta" href="#">Shop Now</a>
+</main>
+
+</body>
+</html>
