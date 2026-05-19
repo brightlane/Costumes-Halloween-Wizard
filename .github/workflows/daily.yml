@@ -1,0 +1,71 @@
+name: Daily Programmatic Index Sync
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # runs every day at 03:00 UTC
+  workflow_dispatch:       # allows manual run button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # -------------------------------------------------
+      # 1. Checkout repository
+      # -------------------------------------------------
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # -------------------------------------------------
+      # 2. Setup Python
+      # -------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # -------------------------------------------------
+      # 3. Install dependencies (CRITICAL FIX)
+      # -------------------------------------------------
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # -------------------------------------------------
+      # 4. Preflight safety check
+      # -------------------------------------------------
+      - name: Preflight check
+        run: python scripts/preflight.py
+
+      # -------------------------------------------------
+      # 5. Run full build
+      # -------------------------------------------------
+      - name: Build site
+        run: python build.py
+
+      # -------------------------------------------------
+      # 6. Validate output integrity
+      # -------------------------------------------------
+      - name: Validate output
+        run: python scripts/validate_output.py
+
+      # -------------------------------------------------
+      # 7. Upload artifact (optional safety backup)
+      # -------------------------------------------------
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: dist/
+
+      # -------------------------------------------------
+      # 8. Deploy step (ONLY ENABLE IF YOU USE GITHUB PAGES)
+      # -------------------------------------------------
+      - name: Deploy to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
