@@ -7,20 +7,12 @@ from core.schema import (
     organization_schema,
     collection_schema
 )
-from core.seo import (
-    canonical_url,
-    hreflang_tags,
-    build_title,
-    build_description
-)
-from core.blog_engine import (
-    generate_all_articles,
-    build_blog_index
-)
+from core.seo import canonical_url, hreflang_tags, build_title, build_description
 
-# NEW IMPORTS (STEP 2 FIX)
-from core.seo_mesh import build_mesh
-from core.routes import slug_url
+from core.blog_engine import generate_all_articles, build_blog_index
+
+from core.seo_mesh import enrich_page
+
 
 # =========================================================
 # CONFIG
@@ -32,8 +24,9 @@ TODAY = str(date.today())
 
 SITE_NAME = "Halloween Costumes 2026"
 
+
 # =========================================================
-# CORE PAGES
+# CORE PAGE DEFINITIONS (SOURCE OF TRUTH)
 # =========================================================
 
 PAGES = [
@@ -41,27 +34,39 @@ PAGES = [
         "slug": "index",
         "title": "Halloween Costumes",
         "description": "Best Halloween costumes for 2026",
-        "template": "page.html"
+        "template": "page.html",
+        "category_key": "main"
     },
     {
         "slug": "womens-costumes",
         "title": "Women's Costumes",
         "description": "Top women's Halloween costumes",
-        "template": "page.html"
+        "template": "page.html",
+        "category_key": "women"
     },
     {
         "slug": "mens-costumes",
         "title": "Men's Costumes",
         "description": "Top men's Halloween costumes",
-        "template": "page.html"
+        "template": "page.html",
+        "category_key": "men"
     },
     {
         "slug": "kids-costumes",
         "title": "Kids Costumes",
         "description": "Best costumes for kids",
-        "template": "page.html"
+        "template": "page.html",
+        "category_key": "kids"
+    },
+    {
+        "slug": "baby-costumes",
+        "title": "Baby Costumes",
+        "description": "Cute baby Halloween costumes",
+        "template": "page.html",
+        "category_key": "baby"
     }
 ]
+
 
 # =========================================================
 # OUTPUT HELPERS
@@ -76,27 +81,38 @@ def output_path(slug):
 def ensure_dir():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 # =========================================================
-# PAGE BUILDER (UPDATED FOR SEO MESH)
+# PAGE BUILDER (NOW FULLY MESH-AWARE)
 # =========================================================
 
-def build_pages(mesh):
-
+def build_pages():
     ensure_dir()
 
     for page in PAGES:
 
         slug = page["slug"]
+        category_key = page.get("category_key", "main")
 
-        url = slug_url(SITE_URL, slug)
+        url = canonical_url(SITE_URL, "en", slug)
+
+        base_content = f"""
+        <h1>{page['title']}</h1>
+        <p>{page['description']}</p>
+        """
+
+        # ✅ THIS IS THE KEY FIX
+        # Everything becomes structured BEFORE rendering
+        enriched = enrich_page(
+            SITE_URL,
+            category_key,
+            base_content
+        )
 
         context = {
-
             "site_name": SITE_NAME,
-
             "title": build_title(page["title"]),
             "description": build_description(page["description"]),
-
             "canonical": url,
 
             "schema_website": website_schema(SITE_NAME, SITE_URL),
@@ -109,16 +125,12 @@ def build_pages(mesh):
 
             "hreflang": hreflang_tags(SITE_URL, slug),
 
-            # 🔥 SEO MESH INJECTION (FIXED INTERNAL LINKING)
-            "mesh": mesh.get(slug, {"related": []}),
-
-            # safe URL reference for templates
-            "page_url": url,
-
-            "content": f"""
-                <h1>{page['title']}</h1>
-                <p>{page['description']}</p>
-            """
+            # =================================================
+            # STRUCTURED CONTENT (IMPORTANT FIX)
+            # =================================================
+            "content": enriched["content"],
+            "internal_links": enriched["internal_links"],
+            "cta": enriched["cta"],
         }
 
         render_page(
@@ -129,15 +141,15 @@ def build_pages(mesh):
 
         print(f"✔ Built page: {slug}")
 
+
 # =========================================================
-# BLOG
+# BLOG BUILD (UNCHANGED BUT STABLE)
 # =========================================================
 
 def build_blog():
-
     articles = generate_all_articles()
-    blog_dir = f"{OUTPUT_DIR}/blog"
 
+    blog_dir = f"{OUTPUT_DIR}/blog"
     os.makedirs(blog_dir, exist_ok=True)
 
     index_html = build_blog_index(articles)
@@ -146,7 +158,6 @@ def build_blog():
         f.write(index_html)
 
     for article in articles:
-
         path = f"{blog_dir}/{article['slug']}.html"
 
         html = f"""
@@ -167,8 +178,9 @@ def build_blog():
 
         print(f"✔ Blog post: {article['slug']}")
 
+
 # =========================================================
-# GLOBAL FILES
+# GLOBAL FILES (SITEMAP + ROBOTS FIXED)
 # =========================================================
 
 def build_global_files():
@@ -178,8 +190,7 @@ def build_global_files():
 """
 
     for page in PAGES:
-
-        url = slug_url(SITE_URL, page["slug"])
+        url = canonical_url(SITE_URL, "en", page["slug"])
 
         sitemap += f"""
 <url>
@@ -207,29 +218,20 @@ Sitemap: {SITE_URL}/sitemap.xml
 
     print("✔ SEO files built")
 
+
 # =========================================================
-# MAIN PIPELINE (STEP 2 FIX)
+# MAIN PIPELINE
 # =========================================================
 
 def build_all():
+    print("🚀 Starting MASS SEO build system...")
 
-    print("🚀 Starting full site build pipeline...")
-
-    ensure_dir()
-
-    # STEP 1: BUILD SEO MESH (CRITICAL FIX)
-    mesh = build_mesh(SITE_URL, PAGES)
-
-    # STEP 2: BUILD PAGES WITH MESH
-    build_pages(mesh)
-
-    # STEP 3: BLOG
+    build_pages()
     build_blog()
-
-    # STEP 4: GLOBAL FILES
     build_global_files()
 
-    print("🏁 Build complete - SEO mesh active")
+    print("🏁 Build complete")
+
 
 # =========================================================
 # RUN
