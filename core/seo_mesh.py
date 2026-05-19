@@ -1,120 +1,173 @@
 from core.routes import slug_url
 
 
-def build_mesh(site_url, pages):
+# =========================================================
+# MASTER CATEGORY MAP (SINGLE SOURCE OF TRUTH)
+# =========================================================
+# This is what fixes your “wrong landing page” issue permanently.
+# Every internal link and CTA MUST come from here.
+
+CATEGORY_MAP = {
+    "main": {
+        "title": "Main Showcase",
+        "slug": "index",
+    },
+
+    "women": {
+        "title": "Women's Halloween Costumes 2026",
+        "slug": "womens-costumes",
+    },
+
+    "men": {
+        "title": "Men's Halloween Costumes 2026",
+        "slug": "mens-costumes",
+    },
+
+    "girls": {
+        "title": "Girls' Halloween Costumes 2026",
+        "slug": "girls-costumes",
+    },
+
+    "boys": {
+        "title": "Boys' Halloween Costumes 2026",
+        "slug": "boys-costumes",
+    },
+
+    "kids": {
+        "title": "Kids Halloween Costumes 2026",
+        "slug": "kids-costumes",
+    },
+
+    "teen": {
+        "title": "Teen Halloween Costumes 2026",
+        "slug": "teen-costumes",
+    },
+
+    "toddler": {
+        "title": "Toddler Halloween Costumes 2026",
+        "slug": "toddler-costumes",
+    },
+
+    "baby": {
+        "title": "Baby Halloween Costumes 2026",
+        "slug": "baby-costumes",
+    },
+
+    "adult": {
+        "title": "Adult Halloween Costumes 2026",
+        "slug": "adult-costumes",
+    },
+}
+
+
+# =========================================================
+# INTERNAL LINK GENERATOR (SEO MESH ENGINE)
+# =========================================================
+
+def build_mesh(site_url: str, active_key: str = None):
     """
-    Builds a structured SEO internal linking system.
+    Builds consistent internal navigation across ALL pages.
 
-    This creates:
-    - hub pages (categories)
-    - sibling links
-    - related content clusters
+    This solves:
+    - wrong landing pages
+    - inconsistent navigation blocks
+    - broken internal SEO structure
     """
 
-    mesh = {}
+    links = []
 
-    # Normalize pages into base structure
-    for page in pages:
-        slug = page["slug"]
+    for key, data in CATEGORY_MAP.items():
 
-        mesh[slug] = {
-            "slug": slug,
-            "url": slug_url(site_url, slug),
-            "title": page["title"],
-            "category": detect_category(slug),
-            "related": [],
-            "siblings": [],
-            "hub": None
-        }
+        url = slug_url(site_url, data["slug"])
 
-    # STEP 1: GROUP BY CATEGORY (SILO SYSTEM)
-    categories = {}
+        links.append({
+            "key": key,
+            "title": data["title"],
+            "url": url,
+            "active": (key == active_key)
+        })
 
-    for slug, data in mesh.items():
-        cat = data["category"]
-
-        if cat not in categories:
-            categories[cat] = []
-
-        categories[cat].append(slug)
-
-    # STEP 2: BUILD SIBLING LINKS (same category)
-    for cat, slugs in categories.items():
-
-        for slug in slugs:
-            mesh[slug]["siblings"] = [
-                mesh[s]["url"]
-                for s in slugs
-                if s != slug
-            ]
-
-    # STEP 3: BUILD RELATED LINKS (cross-category lightweight mesh)
-    all_slugs = list(mesh.keys())
-
-    for slug in all_slugs:
-
-        related = []
-
-        for other in all_slugs:
-
-            if other == slug:
-                continue
-
-            # lightweight relevance logic
-            if is_related(mesh[slug], mesh[other]):
-                related.append(mesh[other]["url"])
-
-        mesh[slug]["related"] = related[:5]  # limit for SEO safety
-
-    # STEP 4: ASSIGN HUB PAGES
-    for cat, slugs in categories.items():
-
-        hub_slug = slugs[0]
-
-        for slug in slugs:
-            mesh[slug]["hub"] = mesh[hub_slug]["url"]
-
-    return mesh
+    return links
 
 
 # =========================================================
-# CATEGORY DETECTION (IMPORTANT FOR LANDING PAGES)
+# RENDERED HTML BLOCK (USED IN TEMPLATES)
 # =========================================================
 
-def detect_category(slug):
+def render_mesh_block(site_url: str, active_key: str = None) -> str:
+    """
+    Converts mesh into safe HTML block for templates.
+    Keeps affiliate links untouched.
+    """
 
-    slug = slug.lower()
+    links = build_mesh(site_url, active_key)
 
-    if "women" in slug:
-        return "women"
-    if "men" in slug:
-        return "men"
-    if "kids" in slug:
-        return "kids"
-    if "girls" in slug:
-        return "kids"
-    if "boys" in slug:
-        return "kids"
-    if "baby" in slug:
-        return "baby"
+    html = """
+<div class="seo-mesh">
+    <h3>Recommended Vault Categories</h3>
+    <ul>
+"""
 
-    return "general"
+    for link in links:
+        css = " class='active'" if link["active"] else ""
+
+        html += f"""
+        <li{css}>
+            <a href="{link['url']}">{link['title']}</a>
+        </li>
+"""
+
+    html += """
+    </ul>
+</div>
+"""
+
+    return html
 
 
 # =========================================================
-# RELATIONSHIP ENGINE (SEO LINKING LOGIC)
+# CTA GENERATOR (ALWAYS CORRECT LANDING PAGES)
 # =========================================================
 
-def is_related(page_a, page_b):
+def build_cta(site_url: str, category_key: str, label: str = None) -> str:
+    """
+    Generates consistent CTA buttons that ALWAYS point
+    to correct landing pages.
+    """
 
-    # same category = strongly related
-    if page_a["category"] == page_b["category"]:
-        return True
+    if category_key not in CATEGORY_MAP:
+        return ""
 
-    # lightweight cross-category relationships
-    keywords_a = set(page_a["slug"].split("-"))
-    keywords_b = set(page_b["slug"].split("-"))
+    data = CATEGORY_MAP[category_key]
+    url = slug_url(site_url, data["slug"])
 
-    overlap = keywords_a.intersection(keywords_b)
+    text = label or f"Shop {data['title']} Deals Online Here ➔"
 
-    return len(overlap) >= 1
+    return f"""
+<div class="seo-cta">
+    <a href="{url}" class="cta-button">
+        {text}
+    </a>
+</div>
+"""
+
+
+# =========================================================
+# PAGE ENRICHMENT PIPELINE
+# =========================================================
+
+def enrich_page(site_url: str, category_key: str, base_content: str):
+    """
+    This is the KEY FIX:
+    Every page now becomes structured:
+
+    - content
+    - mesh navigation
+    - correct CTA
+    """
+
+    return {
+        "content": base_content,
+        "internal_links": render_mesh_block(site_url, category_key),
+        "cta": build_cta(site_url, category_key)
+    }
