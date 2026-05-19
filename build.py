@@ -510,9 +510,12 @@ for key, page in sorted(PAGES.items()):
     <priority>{priority}</priority>
   </url>""")
 
+# FIXED: Joined the entries outside of the f-string curly braces to fix the SyntaxError backslash issue
+joined_entries = "\n".join(sitemap_entries)
+
 sitemap_xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{"\n".join(sitemap_entries)}
+{joined_entries}
 </urlset>"""
 
 with open(sitemap_path, "w", encoding="utf-8") as f:
