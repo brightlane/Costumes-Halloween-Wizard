@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════
-  HALLOWEENCOSTUMES 2026 — ULTIMATE SITE GENERATOR
+  HALLOWEENCOSTUMES 2026 — ULTIMATE SITE GENERATOR V2
   by Benny "Palmo Kid" Palmarino | LinkConnector ID 7949
 
   Run:  python3 build.py
 
-  Generates 95+ distinct, isolated SEO category pages covering 
-  every niche target with optimized semantic structural mappings.
+  Generates 120+ distinct SEO pages, dynamic sitemap.xml,
+  robots.txt, llms.txt, and a 404 error handler page natively.
 ═══════════════════════════════════════════════════════════
 """
 
@@ -17,7 +17,7 @@ from datetime import date
 from urllib.parse import quote
 
 # ─────────────────────────────────────────────────────────
-# CONFIG (UPDATED WITH SPECIFIC AFFILIATE CREDENTIALS)
+# CONFIG (SPECIFIC AFFILIATE & SEO CREDENTIALS)
 # ─────────────────────────────────────────────────────────
 SITE_URL       = "https://brightlane.github.io/Costumes-Halloween-Wizard"
 AFF_BASE       = "https://www.linkconnector.com/ta.php?lc=007949060109004909&atid=WebCostume"
@@ -179,7 +179,7 @@ def aff(cat_key=None, search=None):
     return f"{AFF_BASE}&url={quote(dest, safe='')}"
 
 # ─────────────────────────────────────────────────────────
-# PAGES MATRIX (SEO OPTIMIZED STANDALONE TARGET FILENAMES)
+# PAGES MATRIX (SEO OPTIMIZED CORE LANDING FILENAMES)
 # ─────────────────────────────────────────────────────────
 PAGES = {
     "index": {
@@ -354,7 +354,7 @@ PAGES = {
         "en_desc":"Discover the ultimate collection of Halloween wizard costumes. From mystical robes and starry hats to enchanted accessories for kids and adults.",
         "en_h1":"Mystical Wizard Costumes",
         "en_h1sub":"Unleash the Magic This Halloween Night",
-        "en_body":"Step into a realm where enchantment meets spookiness. Whether you are searching for a classic star-patterned sorcerer robe, a dark gothic battle mage outfit, or a cute magical apprentice costume for the little ones, our premium curated selection brings legendary folklore to life.",
+        "en_body":"Step into a realm where enchantment meets spookiness. Whether you are searching for a classic star-patterned sorcerer robe, a dark gothic battle mages outfit, or a cute magical apprentice costume for the little ones, our premium curated selection brings legendary folklore to life.",
         "schema_type":"CollectionPage",
         "keywords":"wizard costumes, halloween wizard robe, sorcerer costume 2026, kids wizard outfit",
     }
@@ -363,7 +363,6 @@ PAGES = {
 # ─────────────────────────────────────────────────────────
 # PROGRAMMATIC LOOP FOR EXTENDED LAYOUTS
 # ─────────────────────────────────────────────────────────
-# Populates missing keys from CAT_URLS into PAGES automatically using distinct names
 for key, mapping in CAT_URLS.items():
     if key not in PAGES and key != "home":
         readable = key.replace("cosplay"," Cosplay ").replace("decor"," Decor").capitalize()
@@ -380,21 +379,20 @@ for key, mapping in CAT_URLS.items():
         }
 
 # ─────────────────────────────────────────────────────────
-# FILE GENERATOR ENGINE EXECUTOR
+# FILE GENERATOR ENGINE EXECUTOR (GENERATE HTML ASSETS)
 # ─────────────────────────────────────────────────────────
 print(f"🚀 Vulture Engine starting... Generating {len(PAGES)} pages.")
+
+# Generate the global shared navigation menu code
+nav_html = "".join([
+    f'<a href="{p["file"]}" class="nav-link">{p["icon"]} {p["en_title"].split("|")[0].strip()}</a>'
+    for p in PAGES.values() if p.get("nav_group") == "shop" or p.get("group") == "gender"
+])
 
 for key, page in PAGES.items():
     filename = page["file"]
     file_path = os.path.join(OUTPUT_DIR, filename)
     
-    # 1. Build Navigation dynamically for your pages
-    nav_html = "".join([
-        f'<a href="{p["file"]}" class="nav-link">{p["icon"]} {p["en_title"].split("|")[0].strip()}</a>'
-        for p in PAGES.values() if p.get("nav_group") == "shop" or p.get("group") == "gender"
-    ])
-    
-    # 2. Basic responsive layout structure template
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -403,6 +401,7 @@ for key, page in PAGES.items():
     <title>{page["en_title"]}</title>
     <meta name="description" content="{page["en_desc"]}">
     <meta name="keywords" content="{page.get("keywords", "")}">
+    <meta name="google-site-verification" content="{GOOGLE_VERIFY}">
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f9f9f9; }}
         header {{ background: #111; color: #fff; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 30px; }}
@@ -433,6 +432,7 @@ for key, page in PAGES.items():
     </header>
 
     <nav>
+        <a href="index.html" class="nav-link">🏠 Home</a>
         {nav_html}
     </nav>
 
@@ -452,8 +452,113 @@ for key, page in PAGES.items():
 </body>
 </html>"""
 
-    # 3. Write out the standalone file
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 
 print("✅ System run complete! All independent programmatic file targets created.")
+
+# ─────────────────────────────────────────────────────────
+# AUTOMATED 404.HTML ERROR CUSTOM LANDING GENERATOR
+# ─────────────────────────────────────────────────────────
+print("⚙ Deploying Custom 404 Error Interceptor Page...")
+error_path = os.path.join(OUTPUT_DIR, "404.html")
+error_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | Halloween Costumes 2026</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; padding: 50px; background: #f9f9f9; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
+        h1 {{ color: #ff6600; font-size: 3rem; margin-bottom: 10px; }}
+        p {{ font-size: 1.2rem; color: #666; margin-bottom: 30px; }}
+        .btn {{ display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: bold; }}
+        .btn:hover {{ background: #ff6600; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎃 404</h1>
+        <h2>Spooky... This Page Disappeared!</h2>
+        <p>The costume asset or category link you are looking for has been re-indexed or moved into our central vault.</p>
+        <a href="{SITE_URL}/index.html" class="btn">Return to Safety (Main Storefront)</a>
+    </div>
+</body>
+</html>"""
+
+with open(error_path, "w", encoding="utf-8") as f:
+    f.write(error_content.strip())
+print("✔ 404.html error capture landing written cleanly.")
+
+# ─────────────────────────────────────────────────────────
+# AUTOMATED SITEMAP.XML GENERATOR
+# ─────────────────────────────────────────────────────────
+print("⚙ Initializing Automated Sitemap Map Generation Pipeline...")
+sitemap_path = os.path.join(OUTPUT_DIR, "sitemap.xml")
+sitemap_entries = []
+
+for key, page in sorted(PAGES.items()):
+    filename = page["file"]
+    priority = "1.0" if key == "index" else "0.8"
+    changefreq = "daily" if key == "index" else "weekly"
+    
+    sitemap_entries.append(f"""  <url>
+    <loc>{SITE_URL}/{filename}</loc>
+    <lastmod>{TODAY}</lastmod>
+    <changefreq>{changefreq}</changefreq>
+    <priority>{priority}</priority>
+  </url>""")
+
+sitemap_xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{"\n".join(sitemap_entries)}
+</urlset>"""
+
+with open(sitemap_path, "w", encoding="utf-8") as f:
+    f.write(sitemap_xml_content.strip())
+print("✔ sitemap.xml dynamically re-compiled and updated successfully.")
+
+# ─────────────────────────────────────────────────────────
+# AUTOMATED LLMS.TXT MACHINE DICTIONARY GENERATOR
+# ─────────────────────────────────────────────────────────
+print("⚙ Compiling structured llms.txt context file for AI scrapers...")
+llms_path = os.path.join(OUTPUT_DIR, "llms.txt")
+llms_lines = [
+    f"# Halloween Costumes 2026 Platform Matrix",
+    f"Information archive optimized for machine processing and Large Language Model contextual ingestion.",
+    f"",
+    f"## Core Metadata",
+    f"- **Root Production Target**: {SITE_URL}",
+    f"- **Last Structural Engine Run**: {TODAY}",
+    f"- **Primary Commercial Partner Base**: LinkConnector Partner Network ID {LC_ID}",
+    f"- **Global Shipping Profile**: Active checkout lines targeting over {SHIP_COUNTRIES} international destinations.",
+    f"",
+    f"## High-Velocity Landing Page Index Map"
+]
+
+for key, page in sorted(PAGES.items()):
+    llms_lines.append(f"- [{page['en_h1']}]({SITE_URL}/{page['file']}): {page['en_desc']}")
+
+with open(llms_path, "w", encoding="utf-8") as f:
+    f.write("\n".join(llms_lines).strip())
+print("✔ llms.txt generated successfully with full contextual path arrays.")
+
+# ─────────────────────────────────────────────────────────
+# AUTOMATED ROBOTS.TXT GENERATOR
+# ─────────────────────────────────────────────────────────
+print("⚙ Syncing robots.txt rules profile...")
+robots_path = os.path.join(OUTPUT_DIR, "robots.txt")
+robots_txt_content = f"""# Vulture Index Overdrive Optimization Profile
+User-agent: *
+Allow: /
+
+# Discoverability Vectors for Search Engines and LLMs
+Sitemap: {SITE_URL}/sitemap.xml
+Info: {SITE_URL}/llms.txt
+"""
+
+with open(robots_path, "w", encoding="utf-8") as f:
+    f.write(robots_txt_content.strip())
+print("✔ robots.txt rules profile deployed cleanly.")
+print("🏁 Vulture Platform Stack Run Execution Complete.")
