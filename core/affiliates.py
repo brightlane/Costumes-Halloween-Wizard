@@ -1,60 +1,40 @@
-# core/affiliates.py
-
 from urllib.parse import urlencode
 
-# =========================================================
-# GLOBAL AFFILIATE CONFIG
-# =========================================================
-
-AFFILIATE_ID = "your_affiliate_id_here"
-BASE_OUTBOUND = "https://example.com/deals"  # replace with real merchant base
-
-# =========================================================
-# CORE AFFILIATE LINK BUILDER
-# =========================================================
-
-def affiliate_link(slug: str, campaign: str = "default", label: str = "Shop Now") -> str:
-    """
-    Generates tracked affiliate URLs consistently across entire site.
-    """
-
-    params = {
-        "aff": AFFILIATE_ID,
-        "src": campaign,
-        "tag": slug
-    }
-
-    url = f"{BASE_OUTBOUND}?{urlencode(params)}"
-
-    return f'<a href="{url}" rel="nofollow sponsored">{label}</a>'
-
-
-# =========================================================
-# CATEGORY MAPPING (IMPORTANT FOR SEO + CONVERSION)
-# =========================================================
-
-AFFILIATE_CAMPAIGNS = {
-    "index": "home",
-    "women": "women_costumes",
-    "men": "men_costumes",
-    "kids": "kids_costumes",
-    "girls": "girls_costumes",
-    "boys": "boys_costumes",
-    "toddler": "toddler_costumes",
-    "baby": "baby_costumes",
-    "teen": "teen_costumes",
-    "adult": "adult_costumes",
+AFFILIATE_CONFIG = {
+    "affiliate_id": "7949",
+    "network": "LinkConnector",
+    "tracking_url": "https://www.linkconnector.com/ta.php",
+    "lc": "007949060109004909",
+    "atid": "WebCostume",
+    "niche": "Halloween Costumes",
+    "owner": "Benny Palmarino"
 }
 
 
-def category_affiliate(slug: str) -> str:
+def affiliate_link(search=None, slug=None, tag=None):
     """
-    Returns category-specific affiliate link.
+    Stable LinkConnector affiliate router
+    Ensures attribution is ALWAYS preserved
     """
-    campaign = AFFILIATE_CAMPAIGNS.get(slug, "generic")
 
-    return affiliate_link(
-        slug=slug,
-        campaign=campaign,
-        label="Shop Deals ➜"
-    )
+    base = AFFILIATE_CONFIG["tracking_url"]
+
+    params = {
+        "lc": AFFILIATE_CONFIG["lc"],
+        "atid": AFFILIATE_CONFIG["atid"],
+    }
+
+    # -----------------------------
+    # SEO / tracking enrichment
+    # -----------------------------
+    if search:
+        params["q"] = search
+
+    if tag:
+        params["tag"] = tag
+
+    if slug:
+        params["page"] = slug
+
+    # ALWAYS return tracked link
+    return f"{base}?{urlencode(params)}"
