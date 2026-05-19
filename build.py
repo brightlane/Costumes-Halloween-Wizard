@@ -1,6 +1,5 @@
 import os
 from datetime import date
-from itertools import product
 
 from core.renderer import render_page
 from core.schema import (
@@ -20,136 +19,74 @@ from core.blog_engine import (
 )
 
 # =========================================================
-# CONFIG
+# CONFIG (HARDENED)
 # =========================================================
 
 SITE_URL = "https://brightlane.github.io/Costumes-Halloween-Wizard"
 OUTPUT_DIR = "dist"
-TODAY = str(date.today())
 SITE_NAME = "Halloween Costumes 2026"
+TODAY = str(date.today())
 
 # =========================================================
-# CORE BASE TOPICS
+# CORE PAGES
 # =========================================================
 
-BASE_CATEGORIES = [
-    "womens", "mens", "kids", "baby", "toddler",
-    "teen", "adult", "couples", "group"
-]
-
-FANDOMS = [
-    "anime", "gaming", "horror", "movies", "tvshows",
-    "superhero", "fantasy", "wizard"
-]
-
-INTENTS = [
-    "cheap",
-    "last-minute",
-    "best",
-    "trending",
-    "2026",
-    "group",
-    "funny",
-    "scary"
-]
-
-LOCATIONS = [
-    "near-me",
-    "usa",
-    "uk",
-    "canada",
-    "australia"
+PAGES = [
+    {
+        "slug": "index",
+        "title": "Halloween Costumes",
+        "description": "Best Halloween costumes for 2026",
+        "template": "page.html"
+    },
+    {
+        "slug": "womens-costumes",
+        "title": "Women's Costumes",
+        "description": "Top women's Halloween costumes",
+        "template": "page.html"
+    },
+    {
+        "slug": "mens-costumes",
+        "title": "Men's Costumes",
+        "description": "Top men's Halloween costumes",
+        "template": "page.html"
+    },
+    {
+        "slug": "kids-costumes",
+        "title": "Kids Costumes",
+        "description": "Best costumes for kids",
+        "template": "page.html"
+    }
 ]
 
 # =========================================================
-# OUTPUT
+# SAFETY INIT (NO-BREAK LAYER)
+# =========================================================
+
+def ensure_dirs():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(f"{OUTPUT_DIR}/blog", exist_ok=True)
+
+# =========================================================
+# OUTPUT PATH
 # =========================================================
 
 def output_path(slug):
     return f"{OUTPUT_DIR}/{slug}.html"
 
-def ensure_dir():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
 # =========================================================
-# SLUG BUILDER (ANTI-DUPLICATE SAFE)
-# =========================================================
-
-def build_slug(*parts):
-    return "-".join([p.lower().replace(" ", "-") for p in parts])
-
-# =========================================================
-# PAGE FACTORY
-# =========================================================
-
-def generate_pages():
-
-    pages = []
-
-    # -----------------------------
-    # 1. BASE CATEGORY PAGES
-    # -----------------------------
-    for cat in BASE_CATEGORIES:
-        pages.append({
-            "slug": build_slug(cat, "costumes"),
-            "title": f"{cat.title()} Halloween Costumes",
-            "description": f"Best {cat} Halloween costumes for 2026",
-            "type": "collection"
-        })
-
-    # -----------------------------
-    # 2. FANDOM PAGES
-    # -----------------------------
-    for fandom in FANDOMS:
-        pages.append({
-            "slug": build_slug(fandom, "costumes"),
-            "title": f"{fandom.title()} Costumes",
-            "description": f"Top {fandom} Halloween costume ideas",
-            "type": "fandom"
-        })
-
-    # -----------------------------
-    # 3. INTENT PAGES (SEO BOOSTERS)
-    # -----------------------------
-    for cat, intent in product(BASE_CATEGORIES, INTENTS):
-        pages.append({
-            "slug": build_slug(intent, cat, "costumes"),
-            "title": f"{intent.title()} {cat.title()} Costumes",
-            "description": f"{intent} {cat} Halloween costumes for 2026",
-            "type": "intent"
-        })
-
-    # -----------------------------
-    # 4. LOCATION PAGES
-    # -----------------------------
-    for cat, loc in product(BASE_CATEGORIES, LOCATIONS):
-        pages.append({
-            "slug": build_slug(cat, "costumes", loc),
-            "title": f"{cat.title()} Costumes {loc.replace('-', ' ').title()}",
-            "description": f"{cat} Halloween costumes available {loc}",
-            "type": "geo"
-        })
-
-    return pages
-
-# =========================================================
-# PAGE BUILDER
+# PAGE BUILDER (SAFE MODE)
 # =========================================================
 
 def build_pages():
+    print("🚀 Building pages...")
 
-    ensure_dir()
+    for page in PAGES:
 
-    pages = generate_pages()
+        slug = page["slug"]
 
-    print(f"🚀 Generating {len(pages)} SEO pages...")
-
-    for page in pages:
-
-        url = canonical_url(SITE_URL, "en", page["slug"])
+        url = canonical_url(SITE_URL, "en", slug)
 
         context = {
-
             "site_name": SITE_NAME,
             "title": build_title(page["title"]),
             "description": build_description(page["description"]),
@@ -163,41 +100,37 @@ def build_pages():
                 url
             ),
 
-            "hreflang": hreflang_tags(SITE_URL, page["slug"]),
+            "hreflang": hreflang_tags(SITE_URL, slug),
 
-            "content": f"""
-                <h1>{page['title']}</h1>
-                <p>{page['description']}</p>
-                <p>Explore premium 2026 costume collections updated daily.</p>
-            """
+            "content": f"<h1>{page['title']}</h1><p>{page['description']}</p>"
         }
 
         render_page(
-            "page.html",
-            output_path(page["slug"]),
+            page["template"],
+            output_path(slug),
             context
         )
 
-        print(f"✔ {page['slug']}")
+        print(f"✔ Page built: {slug}")
 
 # =========================================================
-# BLOG SYSTEM (EXPANDABLE TO 200+ POSTS)
+# BLOG BUILDER (ISOLATED)
 # =========================================================
 
 def build_blog():
+    print("🚀 Building blog...")
 
     articles = generate_all_articles()
 
     blog_dir = f"{OUTPUT_DIR}/blog"
-    os.makedirs(blog_dir, exist_ok=True)
 
-    # Index
+    # INDEX
     index_html = build_blog_index(articles)
 
     with open(f"{blog_dir}/index.html", "w", encoding="utf-8") as f:
         f.write(index_html)
 
-    # Posts
+    # POSTS
     for article in articles:
 
         path = f"{blog_dir}/{article['slug']}.html"
@@ -226,23 +159,22 @@ def build_blog():
 
 def build_global_files():
 
-    pages = generate_pages()
+    print("🚀 Building SEO files...")
 
     # sitemap
     sitemap = """<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 """
 
-    for p in pages:
-
-        url = canonical_url(SITE_URL, "en", p["slug"])
+    for page in PAGES:
+        url = canonical_url(SITE_URL, "en", page["slug"])
 
         sitemap += f"""
 <url>
-  <loc>{url}</loc>
-  <lastmod>{TODAY}</lastmod>
-  <changefreq>weekly</changefreq>
-  <priority>0.7</priority>
+    <loc>{url}</loc>
+    <lastmod>{TODAY}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
 </url>
 """
 
@@ -265,18 +197,42 @@ Sitemap: {SITE_URL}/sitemap.xml
     print("✔ SEO files built")
 
 # =========================================================
-# MASTER RUNNER
+# VALIDATION LAYER (NEW NO-BREAK ENGINE)
+# =========================================================
+
+def validate_output():
+
+    print("🔍 Validating build output...")
+
+    required = [
+        f"{OUTPUT_DIR}/index.html",
+        f"{OUTPUT_DIR}/sitemap.xml",
+        f"{OUTPUT_DIR}/robots.txt"
+    ]
+
+    missing = [f for f in required if not os.path.exists(f)]
+
+    if missing:
+        raise RuntimeError(f"Missing required outputs: {missing}")
+
+    print("✔ Output validation passed")
+
+# =========================================================
+# MAIN PIPELINE
 # =========================================================
 
 def build_all():
 
-    print("🚀 Starting MASS SEO build system...")
+    print("🚀 Starting NO-BREAK SEO build system...")
+
+    ensure_dirs()
 
     build_pages()
     build_blog()
     build_global_files()
+    validate_output()
 
-    print("🏁 Build complete")
+    print("🏁 Build complete - stable output generated")
 
 # =========================================================
 # RUN
