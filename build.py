@@ -1,622 +1,332 @@
 #!/usr/bin/env python3
-"""
-═══════════════════════════════════════════════════════════
-  HALLOWEENCOSTUMES 2026 — ULTIMATE SITE GENERATOR V3
-  by Benny "Palmo Kid" Palmarino | LinkConnector ID 7949
-
-  Run:  python3 build.py
-
-  Features:
-  - Hyper-Targeted Semantic Silo Text Engine (No Duplicate Text)
-  - Structural Cross-Linking Matrix (Silo Routing)
-  - Auto-Minified Static Resource Target Outputs
-  - Fully Verified Canonical Routing Matrices
-  - Generates 120+ Dynamic SEO Landing Assets Natively
-═══════════════════════════════════════════════════════════
-"""
 
 import os
-import re
+import json
 from datetime import date
-from urllib.parse import quote
 
-# ─────────────────────────────────────────────────────────
-# CONFIG (SPECIFIC AFFILIATE & SEO CREDENTIALS)
-# ─────────────────────────────────────────────────────────
-SITE_URL       = "https://brightlane.github.io/Costumes-Halloween-Wizard"
-AFF_BASE       = "https://www.linkconnector.com/ta.php?lc=007949060109004909&atid=WebCostume"
-OWNER          = 'Benny "Palmo Kid" Palmarino'
-LC_ID          = "7949"
-TODAY          = date.today().isoformat()
-OUTPUT_DIR     = "."
-GOOGLE_VERIFY  = "eWVDN3vbam9nnaZQu7wAQKyfmJJdM7zjI80l4DGeUrQ"
-SHIP_COUNTRIES = "200+"
+from core.renderer import render
+from core.affiliate import affiliate_url
+from core.schema import faq_schema
 
-# ─────────────────────────────────────────────────────────
-# AFFILIATE LINK BUILDER DATABASE
-# ─────────────────────────────────────────────────────────
-CAT_URLS = {
-    "home":             "https://www.halloweencostumes.com/",
-    "womens":           "https://www.halloweencostumes.com/womens-halloween-costumes.html",
-    "mens":             "https://www.halloweencostumes.com/mens-halloween-costumes.html",
-    "girls":            "https://www.halloweencostumes.com/girls-halloween-costumes.html",
-    "boys":             "https://www.halloweencostumes.com/boys-halloween-costumes.html",
-    "kids":             "https://www.halloweencostumes.com/kids-halloween-costumes.html",
-    "teen":             "https://www.halloweencostumes.com/teen-halloween-costumes.html",
-    "toddler":          "https://www.halloweencostumes.com/toddler-halloween-costumes.html",
-    "baby":             "https://www.halloweencostumes.com/baby-halloween-costumes.html",
-    "adult":            "https://www.halloweencostumes.com/adult-halloween-costumes.html",
-    "scary":            "https://www.halloweencostumes.com/scary-halloween-costumes.html",
-    "funny":            "https://www.halloweencostumes.com/funny-halloween-costumes.html",
-    "sexy":             "https://www.halloweencostumes.com/sexy-halloween-costumes.html",
-    "couples":          "https://www.halloweencostumes.com/couples-halloween-costumes.html",
-    "group":            "https://www.halloweencostumes.com/group-halloween-costumes.html",
-    "new2026":          "https://www.halloweencostumes.com/new-halloween-costumes.html",
-    "plussize":         "https://www.halloweencostumes.com/plus-size-halloween-costumes.html",
-    "wholesale":        "https://www.halloweencostumes.com/wholesale-halloween-costumes.html",
-    "pet":              "https://www.halloweencostumes.com/pet-halloween-costumes.html",
-    "accessories":      "https://www.halloweencostumes.com/halloween-costume-accessories.html",
-    "wigs":             "https://www.halloweencostumes.com/halloween-wigs.html",
-    "masks":            "https://www.halloweencostumes.com/halloween-masks.html",
-    "decorations":      "https://www.halloweencostumes.com/halloween-decorations.html",
-    "sale":             "https://www.halloweencostumes.com/sale-halloween-costumes.html",
-    "lastminute":       "https://www.halloweencostumes.com/last-minute-halloween-costumes.html",
-    "animatronics":     "https://www.halloweencostumes.com/halloween-animatronics.html",
-    "props":            "https://www.halloweencostumes.com/halloween-props.html",
-    "indoordecor":      "https://www.halloweencostumes.com/indoor-halloween-decorations.html",
-    "outdoordecor":     "https://www.halloweencostumes.com/outdoor-halloween-decorations.html",
-    "licensed":         "https://www.halloweencostumes.com/officially-licensed-halloween-costumes.html",
-    "inflatable":       "https://www.halloweencostumes.com/inflatable-halloween-costumes.html",
-    "collectibles":     "https://www.halloweencostumes.com/halloween-collectibles.html",
-    "tween":            "https://www.halloweencostumes.com/tween-halloween-costumes.html",
-    "medieval":         "https://www.halloweencostumes.com/renaissance-medieval-costumes.html",
-    "videogame":        "https://www.halloweencostumes.com/video-game-costumes.html",
-    "themes":           "https://www.halloweencostumes.com/halloween-costume-themes.html",
-    "comiccon":         "https://www.halloweencostumes.com/superhero-costumes.html",
-    "sizeguide":        "https://www.halloweencostumes.com/size-charts.html",
-    "couples2":         "https://www.halloweencostumes.com/couples-halloween-costumes.html",
-    "celebrations":     "https://www.halloweencostumes.com/",
-    "addamsfamily":     "https://www.halloweencostumes.com/search?q=addams+family+costume",
-    "beetlejuice":      "https://www.halloweencostumes.com/search?q=beetlejuice+costume",
-    "horror":           "https://www.halloweencostumes.com/scary-halloween-costumes.html",
-    "fnaf":             "https://www.halloweencostumes.com/search?q=five+nights+at+freddys+costume",
-    "scooby":           "https://www.halloweencostumes.com/search?q=scooby+doo+costume",
-    "harrypotter":      "https://www.halloweencostumes.com/search?q=harry+potter+costume",
-    "decades":          "https://www.halloweencostumes.com/search?q=decade+costumes",
-    "occupation":       "https://www.halloweencostumes.com/search?q=occupation+career+costumes",
-    "fantasy":          "https://www.halloweencostumes.com/search?q=fantasy+fairy+angel+costume",
-    "partysupplies":    "https://www.halloweencostumes.com/halloween-decorations.html",
-    "diy":              "https://www.halloweencostumes.com/halloween-costume-accessories.html",
-    "kpop":             "https://www.halloweencostumes.com/search?q=kpop+costume",
-    "anime":            "https://www.halloweencostumes.com/search?q=anime+costume",
-    "gamer":            "https://www.halloweencostumes.com/search?q=gamer+gaming+costume",
-    "gifts":            "https://www.halloweencostumes.com/",
-    "movies":           "https://www.halloweencostumes.com/search?q=movie+character+costume",
-    "tvshows":          "https://www.halloweencostumes.com/search?q=tv+show+costume",
-    "clothing":         "https://www.halloweencostumes.com/halloween-costume-accessories.html",
-    "yearround":        "https://www.halloweencostumes.com/",
-    "genshin":          "https://www.halloweencostumes.com/search?q=genshin+impact+costume",
-    "leagueoflegends":  "https://www.halloweencostumes.com/search?q=league+of+legends+costume",
-    "overwatch":        "https://www.halloweencostumes.com/search?q=overwatch+costume",
-    "finalfantasy":     "https://www.halloweencostumes.com/search?q=final+fantasy+costume",
-    "deadbydaylight":   "https://www.halloweencostumes.com/search?q=dead+by+daylight+costume",
-    "jujutsukaisen":    "https://www.halloweencostumes.com/search?q=jujutsu+kaisen+costume",
-    "hazbinhotel":      "https://www.halloweencostumes.com/search?q=hazbin+hotel+costume",
-    "frieren":          "https://www.halloweencostumes.com/search?q=frieren+costume",
-    "onepiececosplay":  "https://www.halloweencostumes.com/search?q=one+piece+costume",
-    "cosplayshoes":     "https://www.halloweencostumes.com/search?q=costume+shoes+boots",
-    "convention":       "https://www.halloweencostumes.com/search?q=convention+cosplay+costume",
-    "lolita":           "https://www.halloweencostumes.com/search?q=lolita+costume",
-    "swimwear":         "https://www.halloweencostumes.com/search?q=costume+swimsuit",
-    "kawaii":           "https://www.halloweencostumes.com/search?q=kawaii+costume",
-    "casualwear":       "https://www.halloweencostumes.com/search?q=anime+casual+wear+costume",
-    "nier":             "https://www.halloweencostumes.com/search?q=nier+automata+costume",
-    "cyberpunk":        "https://www.halloweencostumes.com/search?q=cyberpunk+costume",
-    "zelda":            "https://www.halloweencostumes.com/search?q=legend+of+zelda+costume",
-    "devilmaycry":      "https://www.halloweencostumes.com/search?q=devil+may+cry+costume",
-    "weeklydeals":      "https://www.halloweencostumes.com/sale-halloween-costumes.html",
-    "preorder":         "https://www.halloweencostumes.com/new-halloween-costumes.html",
-    "morphsuits":       "https://www.halloweencostumes.com/search?q=morphsuit+full+body+costume",
-    "piggyback":        "https://www.halloweencostumes.com/search?q=piggyback+costume",
-    "digital":          "https://www.halloweencostumes.com/search?q=tech+animated+costume",
-    "fullbody":         "https://www.halloweencostumes.com/search?q=full+body+costume+zentai",
-    "halloweenfashion": "https://www.halloweencostumes.com/search?q=halloween+fashion+clothing",
-    "halloweenpajamas": "https://www.halloweencostumes.com/search?q=halloween+pajamas+sleepwear",
-    "matchingfamily":   "https://www.halloweencostumes.com/search?q=matching+family+halloween+costume",
-    "halloweensweaters":"https://www.halloweencostumes.com/search?q=halloween+sweater+costume",
-    "halloweendresses": "https://www.halloweencostumes.com/search?q=halloween+dress+costume",
-    "makeup":           "https://www.halloweencostumes.com/halloween-makeup.html",
-    "trickortreat":     "https://www.halloweencostumes.com/halloween-costume-accessories.html",
-    "hauntedhouse":     "https://www.halloweencostumes.com/halloween-decorations.html",
-    "pumpkin":          "https://www.halloweencostumes.com/halloween-decorations.html",
-    "lighting":         "https://www.halloweencostumes.com/search?q=halloween+lighting+string+lights",
-    "sizecharts":       "https://www.halloweencostumes.com/size-charts.html",
-    "budget":           "https://www.halloweencostumes.com/sale-halloween-costumes.html",
-    "clearance":        "https://www.halloweencostumes.com/sale-halloween-costumes.html",
-    "princess":         "https://www.halloweencostumes.com/search?q=princess+costume",
-    "mermaid":          "https://www.halloweencostumes.com/search?q=mermaid+costume",
-    "steampunk":        "https://www.halloweencostumes.com/search?q=steampunk+costume",
-    "masquerade":       "https://www.halloweencostumes.com/search?q=masquerade+costume",
-    "food":             "https://www.halloweencostumes.com/search?q=food+costume+funny",
-    "cheerleader":      "https://www.halloweencostumes.com/search?q=cheerleader+costume",
-    "cowgirl":          "https://www.halloweencostumes.com/search?q=cowgirl+western+costume",
-    "bestsellers":      "https://www.halloweencostumes.com/",
-    "animals":          "https://www.halloweencostumes.com/search?q=animal+costume",
-    "dragon":           "https://www.halloweencostumes.com/search?q=dragon+costume",
-    "glowinthedark":    "https://www.halloweencostumes.com/search?q=glow+in+the+dark+costume",
-    "skeletons":        "https://www.halloweencostumes.com/search?q=skeleton+decoration",
-    "spiderwebs":       "https://www.halloweencostumes.com/search?q=spider+web+halloween+decoration",
-    "tombstones":       "https://www.halloweencostumes.com/search?q=tombstone+graveyard+halloween",
-    "candy":            "https://www.halloweencostumes.com/search?q=halloween+candy+treat",
-    "trunkortreat":     "https://www.halloweencostumes.com/search?q=trunk+or+treat+halloween",
-    "gnomes":           "https://www.halloweencostumes.com/search?q=halloween+gnome",
-    "nightmarebc":      "https://www.halloweencostumes.com/search?q=nightmare+before+christmas+costume",
-    "hocuspocus":       "https://www.halloweencostumes.com/search?q=hocus+pocus+costume",
-    "murdermystery":    "https://www.halloweencostumes.com/search?q=murder+mystery+halloween",
-    "sustainable":      "https://www.halloweencostumes.com/search?q=sustainable+eco+halloween+costume",
-    "plusSizeCosplay":  "https://www.halloweencostumes.com/search?q=plus+size+cosplay+costume",
-    "renfaire":         "https://www.halloweencostumes.com/search?q=renaissance+faire+costume",
-    "gothic":           "https://www.halloweencostumes.com/search?q=gothic+dark+aesthetic+costume",
-    "carnival":         "https://www.halloweencostumes.com/search?q=carnival+mardi+gras+costume",
-    "larp":             "https://www.halloweencostumes.com/search?q=larp+roleplay+costume",
-    "cosplaywigs":      "https://www.halloweencostumes.com/halloween-wigs.html",
-    "witchaesthetic":   "https://www.halloweencostumes.com/search?q=witch+aesthetic+costume",
-    "adaptive":         "https://www.halloweencostumes.com/search?q=wheelchair+adaptive+halloween+costume",
-    "celebrity":        "https://www.halloweencostumes.com/search?q=celebrity+costume+2026",
-    "friendscostume":   "https://www.halloweencostumes.com/search?q=best+friends+group+costume",
-    "officecostume":    "https://www.halloweencostumes.com/search?q=office+appropriate+halloween+costume",
-    "racer":            "https://www.halloweencostumes.com/search?q=race+car+driver+costume",
-    "creepydoll":       "https://www.halloweencostumes.com/search?q=doll+puppet+creepy+costume",
-    "occult":           "https://www.halloweencostumes.com/search?q=occult+supernatural+costume",
-    "musicartist":      "https://www.halloweencostumes.com/search?q=music+artist+costume+2026",
-    "horrornight":      "https://www.halloweencostumes.com/search?q=horror+night+costume",
-    "wizard":           "https://www.halloweencostumes.com/search?q=wizard+costume"
-}
+TODAY = date.today().isoformat()
 
-def aff(cat_key=None, search=None):
-    if cat_key and cat_key in CAT_URLS:
-        dest = CAT_URLS[cat_key]
-    elif search:
-        dest = f"https://www.halloweencostumes.com/search?q={search.replace(' ','+')} "
-    else:
-        return AFF_BASE
-    return f"{AFF_BASE}&url={quote(dest, safe='')}"
+SITE_URL = "https://brightlane.github.io/Costumes-Halloween-Wizard"
 
-# ─────────────────────────────────────────────────────────
-# PAGES MATRIX (SEO OPTIMIZED CORE LANDING FILENAMES)
-# ─────────────────────────────────────────────────────────
-PAGES = {
-    "index": {
-        "file":"index.html","cat_key":"home","icon":"🎃",
-        "group":"main","silo":"main",
-        "en_title":"Halloween Costumes 2026 | #1 Store Worldwide",
-        "en_desc":"Halloween costumes 2026 — the world's best deals. Kids, adults, scary, funny, sexy, couples, group, wholesale, pet, accessories and decorations. Ships to 200+ countries.",
-        "en_h1":"Halloween Costumes 2026",
-        "en_h1sub":"The World's #1 Halloween Store",
-        "en_body":"Welcome to the world's #1 Halloween costume destination for 2026. We feature the largest selection of Halloween costumes on the internet — thousands of styles for kids, adults, teens, toddlers, babies, couples, groups, and pets. From cheap Halloween costumes under $10 to premium exclusive designs, our selection beats every other Halloween store online. Updated daily with new arrivals, sales, and exclusive deals. Ships to 200+ countries worldwide.",
-        "schema_type":"WebSite",
-        "keywords":"halloween costumes 2026, best halloween costumes, halloween costume store",
-    },
-    "womens": {
-        "file":"womens-costumes-2026.html","cat_key":"womens","icon":"👩",
-        "group":"gender","silo":"demographics",
-        "en_title":"Women's Halloween Costumes 2026 | Best Deals",
-        "en_desc":"Women's Halloween costumes 2026 — hundreds of styles for women. Classic, scary, funny, sexy and plus size. Ships to 200+ countries.",
-        "en_h1":"Women's Halloween Costumes 2026",
-        "en_h1sub":"Hundreds of Styles for Women",
-        "en_body":"Find the perfect women's Halloween costume 2026 from hundreds of styles. Our women's costume collection covers every theme — classic horror, pop culture icons, funny food costumes, sexy Halloween looks, renaissance and historical costumes, and more. Available in standard and plus sizes, with new styles added daily. Whether you want to be a witch, vampire, superhero, or pop culture queen — we have the best women's Halloween costumes at unbeatable prices.",
-        "schema_type":"CollectionPage",
-        "keywords":"womens halloween costumes, women halloween costumes 2026, ladies halloween costumes",
-    },
-    "mens": {
-        "file":"mens-costumes-online.html","cat_key":"mens","icon":"👨",
-        "group":"gender","silo":"demographics",
-        "en_title":"Men's Halloween Costumes 2026 | Best Deals",
-        "en_desc":"Men's Halloween costumes 2026 — hundreds of styles for men. Scary, funny, classic and pop culture. Ships to 200+ countries.",
-        "en_h1":"Men's Halloween Costumes 2026",
-        "en_h1sub":"Scary, Funny & Classic Styles for Men",
-        "en_body":"Shop the best men's Halloween costumes 2026. Our men's costume collection includes classic monsters, superheroes, movie villains, funny characters, historical figures, and pop culture icons. Available in all sizes including big and tall. Whether you want a terrifying scary costume or a hilarious outfit that wins the costume contest — our men's Halloween costumes have you covered. New styles added daily with unbeatable prices.",
-        "schema_type":"CollectionPage",
-        "keywords":"mens halloween costumes, men halloween costumes 2026, male halloween costumes",
-    },
-    "girls": {
-        "file":"girls-costumes-and-dresses.html","cat_key":"girls","icon":"👧",
-        "group":"gender","silo":"demographics",
-        "en_title":"Girls' Halloween Costumes 2026 | Princess, Witch, Animal & More",
-        "en_desc":"Girls' Halloween costumes 2026 — princess dress-up sets, witch costumes, animal onesies, superhero capes and more. Sizes 2T to 14. From $15. Ships to 200+ countries.",
-        "en_h1":"Girls' Halloween Costumes 2026",
-        "en_h1sub":"Princess Sets, Witches, Animals & Superheroes — From $15",
-        "en_body":"Find the perfect girls' Halloween costume for 2026 — our girls' costume collection is the largest online, covering every category girls love. Disney princess costumes featuring Elsa, Anna, Cinderella, Belle, Aurora, Ariel, Rapunzel, Moana, and Tiana. Light-up LED princess gowns that glow and twinkle all night. Princess dress-up multi-packs with 5-8 different character gowns and accessories in one box — perfect for girls who want to be a different princess every day. Witch costumes in every style from cute to scary. Animal onesie costumes in bee, unicorn, cat, dinosaur, and dozens more adorable creatures. Superhero costumes featuring Wonder Woman, Supergirl, and Black Widow. Mermaid costumes, fairy costumes, and dance recital-style costume sets. Each costume ships complete with accessories — tiaras, wands, earrings, gloves, and character-specific props. Available in sizes 2T through 14 (and adult sizes too). Girls' costumes from just $15. Perfect for Halloween, birthday parties, dress-up play, and school events. Ships to 200+ countries.",
-        "schema_type":"CollectionPage",
-        "keywords":"girls halloween costumes 2026, halloween costumes for girls, princess costume girls, elsa costume, disney princess halloween costume, girls costume set, light up princess dress, multi pack princess dress",
-    },
-    "boys": {
-        "file":"boys-superhero-ninja-costumes.html","cat_key":"boys","icon":"👦",
-        "group":"gender","silo":"demographics",
-        "en_title":"Boys' Halloween Costumes 2026 | Best Deals for Boys",
-        "en_desc":"Boys' Halloween costumes 2026 — superheroes, monsters, ninjas, pirates and more. All sizes from toddler to teen. Ships to 200+ countries.",
-        "en_h1":"Boys' Halloween Costumes 2026",
-        "en_h1sub":"Superheroes, Monsters, Ninjas & Pirates",
-        "en_body":"Shop the coolest boys' Halloween costumes 2026 — superheroes, scary monsters, ninjas, pirates, dinosaurs, Star Wars characters, video game icons and more. Our boys' costume collection covers all ages and sizes from infant to teen. Whether your boy wants to be a terrifying zombie or his favorite movie hero — we have the best boys' Halloween costumes at prices every parent loves.",
-        "schema_type":"CollectionPage",
-        "keywords":"boys halloween costumes, halloween costumes for boys 2026, boy costumes",
-    },
-    "kids": {
-        "file":"kids-halloween-outfits.html","cat_key":"kids","icon":"👶",
-        "group":"age","silo":"demographics",
-        "en_title":"Kids Halloween Costumes 2026 | Best Deals for Children",
-        "en_desc":"Kids Halloween costumes 2026 — superheroes, witches, animals, princesses and more. Sizes for all ages. Ships to 200+ countries.",
-        "en_h1":"Kids Halloween Costumes 2026",
-        "en_h1sub":"Superheroes, Witches, Animals & More",
-        "en_body":"Find the best kids Halloween costumes 2026 for boys and girls of all ages. Our kids costume selection includes superheroes, witches, animals, princesses, scary monsters, funny characters and classic Halloween costumes. We carry kids sizes from toddler and infant all the way to teen, with prices starting from just $10. Perfect for trick-or-treating, school Halloween parties, and family events. All kids costumes ship worldwide with fast delivery.",
-        "schema_type":"CollectionPage",
-        "keywords":"kids halloween costumes, children halloween costumes 2026, halloween costumes for kids",
-    },
-    "teen": {
-        "file":"cool-teen-costumes.html","cat_key":"teen","icon":"🧑",
-        "group":"age","silo":"demographics",
-        "en_title":"Teen Halloween Costumes 2026 | Cool Costumes for Teenagers",
-        "en_desc":"Teen Halloween costumes 2026 — cool, scary and funny costumes for teenagers. Pop culture, horror and trendy styles. Ships to 200+ countries.",
-        "en_h1":"Teen Halloween Costumes 2026",
-        "en_h1sub":"Cool, Scary & Trendy Costumes for Teens",
-        "en_body":"Find the coolest teen Halloween costumes 2026 — styles that teenagers actually want to wear. Our teen costume collection includes the latest pop culture characters, trendy horror looks, funny meme-worthy outfits, and classic Halloween styles updated for 2026. Teen sizes available for both girls and boys. Stand out at the Halloween party with a teen costume that's cool enough to impress your friends.",
-        "schema_type":"CollectionPage",
-        "keywords":"teen halloween costumes, teenager halloween costumes 2026, halloween costumes for teens",
-    },
-    "toddler": {
-        "file":"cute-toddler-costumes.html","cat_key":"toddler","icon":"🍼",
-        "group":"age","silo":"demographics",
-        "en_title":"Toddler Halloween Costumes 2026 | Adorable Kids Costumes",
-        "en_desc":"Toddler Halloween costumes 2026 — adorable and comfortable costumes for toddlers ages 1-4. Animals, superheroes, princesses and more.",
-        "en_h1":"Toddler Halloween Costumes 2026",
-        "en_h1sub":"Adorable Costumes for Little Ones Ages 1-4",
-        "en_body":"Dress your toddler in the cutest Halloween costume 2026 — adorable animal costumes, tiny superhero suits, little witch outfits, and classic Halloween characters scaled down for the littlest trick-or-treaters. Our toddler costumes are designed to be comfortable, easy to put on, and sized perfectly for ages 1-4. Safe materials, vibrant colors, and styles so cute you'll want to photograph every moment. Toddler Halloween costumes from just $10.",
-        "schema_type":"CollectionPage",
-        "keywords":"toddler halloween costumes, halloween costumes for toddlers 2026, toddler costumes",
-    },
-    "baby": {
-        "file":"infant-baby-costumes.html","cat_key":"baby","icon":"👼",
-        "group":"age","silo":"demographics",
-        "en_title":"Baby Halloween Costumes 2026 | Cutest Infant Costumes",
-        "en_desc":"Baby Halloween costumes 2026 — the cutest infant and newborn Halloween costumes. Comfortable, safe and adorable. Ships to 200+ countries.",
-        "en_h1":"Baby Halloween Costumes 2026",
-        "en_h1sub":"The Cutest Infant & Newborn Halloween Costumes",
-        "en_body":"Make your baby's first Halloween unforgettable with our adorable baby Halloween costumes 2026. From tiny pumpkin suits to mini superhero capes, cute animal onesies and classic Halloween characters — our baby costume collection is designed for maximum cuteness and comfort. Safe, soft materials suitable for newborns and infants up to 24 months. These baby Halloween costumes are perfect for trick-or-treating, family photos and Halloween parties.",
-        "schema_type":"CollectionPage",
-        "keywords":"baby halloween costumes, infant halloween costumes 2026, newborn halloween costumes",
-    },
-    "adult": {
-        "file":"adult-costumes-apparel.html","cat_key":"adult","icon":"🎭",
-        "group":"type","silo":"demographics",
-        "en_title":"Adult Halloween Costumes 2026 | Best Deals for Men & Women",
-        "en_desc":"Adult Halloween costumes 2026 — classic horror, pop culture, funny, scary and couples costumes. All sizes. Ships to 200+ countries.",
-        "en_h1":"Adult Halloween Costumes 2026",
-        "en_h1sub":"Classic Horror, Pop Culture & Original Designs",
-        "en_body":"Discover the best adult Halloween costumes 2026 for men and women. Our adult costume collection includes classic horror characters, pop culture icons, funny costumes, scary monsters, couples costumes, and original designs. Available in all sizes from XS to plus size, with styles ranging from traditional Halloween to movie-inspired looks. Perfect for Halloween parties, haunted houses, and costume contests. All adult Halloween costumes ship worldwide.",
-        "schema_type":"CollectionPage",
-        "keywords":"adult halloween costumes, halloween costumes for adults 2026, adult costumes",
-    },
-    "scary": {
-        "file":"scary-horror-costumes.html","cat_key":"scary","icon":"💀",
-        "group":"type","silo":"styles",
-        "en_title":"Scary Halloween Costumes 2026 | Horror & Monster Costumes",
-        "en_desc":"Scary Halloween costumes 2026 — terrifying monsters, zombies, vampires, clowns and haunted house looks. Ships to 200+ countries.",
-        "en_h1":"Scary Halloween Costumes 2026",
-        "en_h1sub":"Monsters, Zombies & Haunted House Looks",
-        "en_body":"Shop the scariest Halloween costumes 2026 — guaranteed to terrify. Our scary costume collection includes classic horror monsters, zombies, vampires, werewolves, scary clowns, mummies, skeletons, demons and haunted house characters. Perfect for Halloween parties, haunted attractions, and anyone who wants to make a truly frightening impression. Scary Halloween costumes available in all sizes for kids, adults and plus size. Ships worldwide.",
-        "schema_type":"CollectionPage",
-        "keywords":"scary halloween costumes, horror halloween costumes 2026, terrifying costumes",
-    },
-    "funny": {
-        "file":"funny-novelty-costumes.html","cat_key":"funny","icon":"😂",
-        "group":"type","silo":"styles",
-        "en_title":"Funny Halloween Costumes 2026 | Hilarious Costume Ideas",
-        "en_desc":"Funny Halloween costumes 2026 — hilarious outfits for adults, kids and groups. Win every costume contest. Ships to 200+ countries.",
-        "en_h1":"Funny Halloween Costumes 2026",
-        "en_h1sub":"Hilarious Outfits That Win Every Contest",
-        "en_body":"Find the funniest Halloween costumes 2026 that are guaranteed to make everyone laugh. Our funny costume collection includes hilarious food costumes, pop culture parodies, punny outfits, inflatable costumes, and novelty character looks. Perfect for Halloween parties, office costume contests, and anyone who prefers laughs over scares. Funny Halloween costumes available for adults, kids, couples, and groups. Ships worldwide.",
-        "schema_type":"CollectionPage",
-        "keywords":"funny halloween costumes, hilarious halloween costumes 2026, humorous costumes",
-    },
-    "sexy": {
-        "file":"sexy-adult-costumes.html","cat_key":"sexy","icon":"💋",
-        "group":"type","silo":"styles",
-        "en_title":"Sexy Halloween Costumes 2026 | Best Adult Costume Deals",
-        "en_desc":"Sexy Halloween costumes 2026 — stylish and alluring adult costume styles for women and men. All sizes. Ships to 200+ countries.",
-        "en_h1":"Sexy Halloween Costumes 2026",
-        "en_h1sub":"Stylish & Alluring Adult Halloween Styles",
-        "en_body":"Find the best sexy Halloween costumes 2026 — stylish, alluring and perfectly crafted adult costume looks for Halloween parties. Our sexy costume collection includes sultry takes on classic Halloween characters, glamorous villain costumes, and chic party-ready looks for women and men. Available in all sizes with quality materials that look stunning. These sexy Halloween costumes are designed for adults who want to turn heads at every Halloween event.",
-        "schema_type":"CollectionPage",
-        "keywords":"sexy halloween costumes, sexy costumes 2026, adult sexy halloween costumes",
-    },
-    "couples": {
-        "file":"matching-couples-costumes.html","cat_key":"couples","icon":"💑",
-        "group":"type","silo":"styles",
-        "en_title":"Couples Halloween Costumes 2026 | Matching Costume Sets",
-        "en_desc":"Couples Halloween costumes 2026 — matching costume sets for two. Classic duos, funny pairs, scary couples and pop culture sets. Ships to 200+ countries.",
-        "en_h1":"Couples Halloween Costumes 2026",
-        "en_h1sub":"Matching Sets for the Perfect Duo",
-        "en_body":"Make Halloween twice as fun with our couples Halloween costumes 2026. We have the best matching costume sets for two — from classic duos like Bonnie & Clyde to funny food pairs, scary horror couples, pop culture icons, and Disney character sets. Our couples costumes are designed to complement each other perfectly, with coordinated styles for him and her. Perfect for Halloween parties, date nights, and every couples costume contest.",
-        "schema_type":"CollectionPage",
-        "keywords":"couples halloween costumes, matching halloween costumes 2026, couples costumes",
-    },
-    "group": {
-        "file":"group-family-costumes.html","cat_key":"group","icon":"👨‍👩‍👧‍👦",
-        "group":"type","silo":"styles",
-        "en_title":"Group Halloween Costumes 2026 | Family & Matching Sets",
-        "en_desc":"Group Halloween costumes 2026 — matching sets for families, friends, couples and office parties. Ships to 200+ countries.",
-        "en_h1":"Group Halloween Costumes 2026",
-        "en_h1sub":"Matching Sets for Families, Friends & Offices",
-        "en_body":"Coordinate your Halloween look with our group and family Halloween costumes 2026. We have matching costume sets for couples, families, friend groups, and office parties. Browse themed group sets from TV shows, movies, fairy tales, and classic Halloween themes. Whether you need costumes for 2 people or 20, we have complete group sets that fit seamlessly.",
-        "schema_type":"CollectionPage",
-        "keywords":"group halloween costumes, family costumes 2026, matching friend costumes",
-    },
-    "wizard": {
-        "file":"mystical-wizard-robes.html","cat_key":"wizard","icon":"🧙‍♂️",
-        "group":"extended","silo":"fandoms",
-        "en_title":"Magical Halloween Wizard Costumes | Spellbinding Outfits",
-        "en_desc":"Discover the ultimate collection of Halloween wizard costumes. From mystical robes and starry hats to enchanted accessories for kids and adults.",
-        "en_h1":"Mystical Wizard Costumes",
-        "en_h1sub":"Unleash the Magic This Halloween Night",
-        "en_body":"Step into a realm where enchantment meets spookiness. Whether you are searching for a classic star-patterned sorcerer robe, a dark gothic battle mages outfit, or a cute magical apprentice costume for the little ones, our premium curated selection brings legendary folklore to life.",
-        "schema_type":"CollectionPage",
-        "keywords":"wizard costumes, halloween wizard robe, sorcerer costume 2026, kids wizard outfit",
-    }
-}
+OUTPUT_DIR = "output"
 
-# ─────────────────────────────────────────────────────────
-# DYNAMIC CONTENT FACTORY SPIN ENGINE
-# ─────────────────────────────────────────────────────────
-def generate_seo_text(key, readable):
-    """Produces hyper-focused niche variants to protect indexing velocity scores."""
-    gaming_keys = ["videogame", "gamer", "genshin", "leagueoflegends", "overwatch", "finalfantasy", "deadbydaylight"]
-    anime_keys = ["anime", "jujutsukaisen", "frieren", "onepiececosplay", "kawaii", "lolita"]
-    decor_keys = ["decorations", "indoordecor", "outdoordecor", "animatronics", "props", "skeletons", "spiderwebs", "tombstones", "lighting", "pumpkin"]
-    apparel_keys = ["fashion", "pajamas", "sweaters", "dresses", "clothing", "swimwear"]
-    
-    if key in gaming_keys:
-        return f"Level up your structural display arrays with our elite tier {readable} layout lines. Tailored specifically for gaming fans, hardware showcase meets authenticity with premium materials built for long convention wear and Halloween nights alike."
-    elif key in anime_keys:
-        return f"Bring iconic panels and cinematic keyframes into absolute reality with our {readable} line. Precision-engineered stitching configurations make this selection perfect for elite cosplayers, photo portfolios, and seasonal events."
-    elif key in decor_keys:
-        return f"Transform standard coordinates into high-impact haunted attractions using our {readable} infrastructure assets. Designed to withstand extreme operational conditions while delivering maximum authentic scare metrics."
-    elif key in apparel_keys:
-        return f"Merge spooky seasonal aesthetics with everyday premium fashion lines using our {readable} catalog items. High-quality thread selections ensure maximum durability across multi-season deployments."
-    
-    return f"Explore our premium selection of {readable} products for the 2026 season. Engineered for comfort, authentic detailing, and durability, our catalog brings top-tier seasonal fashion directly to your door."
+LANGUAGES = ["en", "es", "fr", "de"]
 
-# ─────────────────────────────────────────────────────────
-# PROGRAMMATIC TAXONOMY SILO BUILDING FACTORY
-# ─────────────────────────────────────────────────────────
-for key, mapping in CAT_URLS.items():
-    if key not in PAGES and key != "home":
-        readable = key.replace("cosplay"," Cosplay ").replace("decor"," Decor").replace("halloween"," Halloween ").capitalize()
-        distinct_filename = f"best-{key.lower()}-costumes.html"
-        
-        # Determine strict crawler tracking silos
-        if any(g in key for g in ["anime", "genshin", "jujutsu", "frieren", "onepiece", "lolita", "kpop", "gamer", "videogame", "league", "overwatch", "finalfantasy", "deadbydaylight", "nier", "cyberpunk", "zelda", "devilmaycry", "fnaf"]):
-            assigned_silo = "fandoms"
-        elif any(d in key for d in ["decor", "lighting", "pumpkin", "skeleton", "spider", "tombstone", "supplies", "props", "animatronics", "house"]):
-            assigned_silo = "decorations"
-        elif any(a in key for a in ["fashion", "pajamas", "sweater", "dress", "clothing", "wigs", "masks", "shoes", "makeup"]):
-            assigned_silo = "gear"
-        else:
-            assigned_silo = "extended-variety"
+# =========================================================
+# LOAD DATA
+# =========================================================
 
-        PAGES[key] = {
-            "file": distinct_filename, 
-            "cat_key": key, 
-            "icon": "🎭",
-            "group": "extended", 
-            "silo": assigned_silo,
-            "en_title": f"Best {readable} Costumes & Gear 2026 | Store Deals",
-            "en_desc": f"Shop premium {readable} lines for Halloween 2026. Highest quality materials with global target delivery windows.",
-            "en_h1": f"{readable} Collection 2026",
-            "en_h1sub": "Beat the Competition with Exclusive Deals",
-            "en_body": generate_seo_text(key, readable),
-            "schema_type": "CollectionPage",
-            "keywords": f"{key} costumes, buy {key} halloween online, 2026 {key}"
-        }
+with open("data/pages.json", encoding="utf-8") as f:
+    PAGES = json.load(f)
 
-# ─────────────────────────────────────────────────────────
-# HTML SAFELIGHT MINIFIER ENGINE
-# ─────────────────────────────────────────────────────────
-def minify_html(raw_html):
-    """Safely reduces file size footprints to push core web vital scores to maximum."""
-    html = re.sub(r'^\s+', '', raw_html, flags=re.MULTILINE)
-    html = re.sub(r'\n', ' ', html)
-    html = re.sub(r'\s{2,}', ' ', html)
-    return html.strip()
+with open("data/blog_topics.json", encoding="utf-8") as f:
+    BLOGS = json.load(f)
 
-# ─────────────────────────────────────────────────────────
-# FILE GENERATOR ENGINE EXECUTOR
-# ─────────────────────────────────────────────────────────
-print(f"🚀 Vulture Engine starting... Generating {len(PAGES)} siloed pages.")
+# =========================================================
+# HELPERS
+# =========================================================
 
-for key, page in PAGES.items():
-    filename = page["file"]
-    file_path = os.path.join(OUTPUT_DIR, filename)
-    current_silo = page["silo"]
-    
-    # Build a contextually relevant internal links menu matching current page silo
-    silo_peers = [p for p in PAGES.values() if p["silo"] == current_silo and p["file"] != filename]
-    
-    # Fallback if silo is sparse to maintain navigation options
-    if len(silo_peers) < 4:
-        silo_peers = [p for p in PAGES.values() if p["file"] != filename][:8]
-        
-    internal_nav_html = "".join([
-        f'<a href="{p["file"]}" class="nav-link">{p["icon"]} {p["en_title"].split("|")[0].strip()}</a>'
-        for p in silo_peers[:12]
-    ])
+def ensure_dir(path):
+    os.makedirs(path, exist_ok=True)
 
-    html_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{page["en_title"]}</title>
-    <meta name="description" content="{page["en_desc"]}">
-    <meta name="keywords" content="{page.get("keywords", "")}">
-    <meta name="google-site-verification" content="{GOOGLE_VERIFY}">
-    <link rel="canonical" href="{SITE_URL}/{filename}">
-    <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f9f9f9; }}
-        header {{ background: #111; color: #fff; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 30px; }}
-        header h1 {{ color: #ff6600; margin: 0 0 10px 0; }}
-        .nav-zone {{ background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 30px; }}
-        .nav-label {{ font-size: 0.85rem; font-weight: bold; color: #ff6600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }}
-        nav {{ display: flex; flex-wrap: wrap; gap: 10px; }}
-        .nav-link {{ text-decoration: none; color: #444; padding: 8px 12px; background: #eee; border-radius: 4px; font-size: 0.9rem; transition: background 0.2s; }}
-        .nav-link:hover {{ background: #ff6600; color: #fff; }}
-        main {{ background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
-        .cta-btn {{ display: inline-block; background: #ff6600; color: #fff; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; font-size: 1.2rem; margin: 20px 0; }}
-        .cta-btn:hover {{ background: #e05500; }}
-        footer {{ margin-top: 30px; text-align: center; padding: 20px; color: #777; font-size: 0.85rem; }}
-    </style>
-    <script type="application/ld+json">
-    {{
-        "@context": "https://schema.org",
-        "@type": "{page.get("schema_type", "CollectionPage")}",
-        "name": "{page["en_title"]}",
-        "description": "{page["en_desc"]}",
-        "url": "{SITE_URL}/{filename}"
-    }}
-    </script>
-</head>
-<body>
-    <header>
-        <h1>{page["icon"]} {page["en_h1"]}</h1>
-        <p>{page["en_h1sub"]}</p>
-    </header>
+def write_file(path, content):
 
-    <div class="nav-zone">
-        <div class="nav-label">Recommended Vault Categories</div>
-        <nav>
-            <a href="index.html" class="nav-link">🏠 Main Showcase</a>
-            {internal_nav_html}
-        </nav>
-    </div>
+    ensure_dir(os.path.dirname(path))
 
-    <main>
-        <p>{page["en_body"]}</p>
-        <center>
-            <a href="{aff(page["cat_key"])}" class="cta-btn" target="_blank" rel="nofollow noopener">
-                Shop {page["en_h1"]} Deals Online Here ➔
-            </a>
-        </center>
-    </main>
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
 
-    <footer>
-        <p>&copy; 2026 {OWNER} | Affiliate Platform Portfolio | Powered by Vulture Engine</p>
-    </footer>
-</body>
-</html>"""
+def page_output_path(lang, slug):
 
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(minify_html(html_content))
+    if slug == "index":
+        return f"{OUTPUT_DIR}/{lang}/index.html"
 
-print("✅ System run complete! All independent programmatic file targets created and minified.")
+    return f"{OUTPUT_DIR}/{lang}/{slug}/index.html"
 
-# ─────────────────────────────────────────────────────────
-# AUTOMATED 404 ERROR CAPTURE INTERCEPTOR 
-# ─────────────────────────────────────────────────────────
-print("⚙ Deploying Custom 404 Error Interceptor Page...")
-error_path = os.path.join(OUTPUT_DIR, "404.html")
-error_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found | Halloween Costumes 2026</title>
-    <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; padding: 50px; background: #f9f9f9; color: #333; }}
-        .container {{ max-width: 600px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
-        h1 {{ color: #ff6600; font-size: 3rem; margin-bottom: 10px; }}
-        p {{ font-size: 1.2rem; color: #666; margin-bottom: 30px; }}
-        .btn {{ display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: bold; }}
-        .btn:hover {{ background: #ff6600; }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🎃 404</h1>
-        <h2>Spooky... This Page Disappeared!</h2>
-        <p>The costume asset or category link you are looking for has been re-indexed or moved into our central vault.</p>
-        <a href="{SITE_URL}/index.html" class="btn">Return to Safety (Main Storefront)</a>
-    </div>
-</body>
-</html>"""
+# =========================================================
+# CATEGORY PAGE GENERATION
+# =========================================================
 
-with open(error_path, "w", encoding="utf-8") as f:
-    f.write(minify_html(error_content))
-print("✔ 404.html error capture landing written cleanly.")
+search_index = []
 
-# ─────────────────────────────────────────────────────────
-# AUTOMATED SITEMAP.XML GENERATOR
-# ─────────────────────────────────────────────────────────
-print("⚙ Initializing Automated Sitemap Map Generation Pipeline...")
-sitemap_path = os.path.join(OUTPUT_DIR, "sitemap.xml")
-sitemap_entries = []
+sitemap_urls = []
 
-for key, page in sorted(PAGES.items()):
-    filename = page["file"]
-    priority = "1.0" if key == "index" else "0.8"
-    changefreq = "daily" if key == "index" else "weekly"
-    
-    sitemap_entries.append(f"  <url>\n    <loc>{SITE_URL}/{filename}</loc>\n    <lastmod>{TODAY}</lastmod>\n    <changefreq>{changefreq}</changefreq>\n    <priority>{priority}</priority>\n  </url>")
+rss_items = []
 
-joined_entries = "\n".join(sitemap_entries)
+for lang in LANGUAGES:
 
-sitemap_xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{joined_entries}
-</urlset>"""
+    for page in PAGES:
 
-with open(sitemap_path, "w", encoding="utf-8") as f:
-    f.write(sitemap_xml_content.strip())
-print("✔ sitemap.xml dynamically re-compiled and updated successfully.")
+        slug = page["slug"]
 
-# ─────────────────────────────────────────────────────────
-# AUTOMATED LLMS.TXT MACHINE DICTIONARY GENERATOR
-# ─────────────────────────────────────────────────────────
-print("⚙ Compiling structured llms.txt context file for AI scrapers...")
-llms_path = os.path.join(OUTPUT_DIR, "llms.txt")
-llms_lines = [
-    f"# Halloween Costumes 2026 Platform Matrix",
-    f"Information archive optimized for machine processing and Large Language Model contextual ingestion.",
-    f"",
-    f"## Core Metadata",
-    f"- **Root Production Target**: {SITE_URL}",
-    f"- **Last Structural Engine Run**: {TODAY}",
-    f"- **Primary Commercial Partner Base**: LinkConnector Partner Network ID {LC_ID}",
-    f"- **Global Shipping Profile**: Active checkout lines targeting over {SHIP_COUNTRIES} international destinations.",
-    f"",
-    f"## High-Velocity Landing Page Index Map"
-]
+        title = page["title"]
 
-for key, page in sorted(PAGES.items()):
-    llms_lines.append(f"- [{page['en_h1']}]({SITE_URL}/{page['file']}): {page['en_desc']}")
+        description = page["description"]
 
-with open(llms_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(llms_lines).strip())
-print("✔ llms.txt generated successfully with full contextual path arrays.")
+        body = page["body"]
 
-# ─────────────────────────────────────────────────────────
-# AUTOMATED ROBOTS.TXT GENERATOR
-# ─────────────────────────────────────────────────────────
-print("⚙ Syncing robots.txt rules profile...")
-robots_path = os.path.join(OUTPUT_DIR, "robots.txt")
-robots_txt_content = f"""# Vulture Index Overdrive Optimization Profile
-User-agent: *
-Allow: /
+        category = page["category"]
 
-# Discoverability Vectors for Search Engines and LLMs
-Sitemap: {SITE_URL}/sitemap.xml
-Info: {SITE_URL}/llms.txt
+        related_pages = []
+
+        for rel in PAGES[:8]:
+
+            if rel["slug"] != slug:
+
+                related_pages.append({
+                    "title": rel["title"],
+                    "url": f"/{lang}/{rel['slug']}/"
+                })
+
+        affiliate_link = affiliate_url(cat_key=category)
+
+        faq = [
+            {
+                "q": f"What are the best {title}?",
+                "a": f"Our {title} collection includes trending and best-selling styles for 2026."
+            },
+            {
+                "q": f"Where can I buy {title}?",
+                "a": f"You can browse top-rated selections online with worldwide shipping available."
+            }
+        ]
+
+        faq_json = faq_schema(faq)
+
+        html = render(
+            "category.html",
+            {
+                "lang": lang,
+                "title": title,
+                "description": description,
+                "canonical": f"{SITE_URL}/{lang}/{slug}/",
+                "h1": title,
+                "subtitle": "Trending Halloween Styles for 2026",
+                "body": body,
+                "affiliate_link": affiliate_link,
+                "related_pages": related_pages,
+                "faq_schema": faq_json,
+                "nav_links": [
+                    {
+                        "name": "Home",
+                        "url": f"/{lang}/"
+                    },
+                    {
+                        "name": "Blog",
+                        "url": f"/{lang}/blog/"
+                    }
+                ],
+                "hreflangs": [
+                    {
+                        "lang": l,
+                        "url": f"{SITE_URL}/{l}/{slug}/"
+                    }
+                    for l in LANGUAGES
+                ]
+            }
+        )
+
+        out_path = page_output_path(lang, slug)
+
+        write_file(out_path, html)
+
+        sitemap_urls.append(
+            f"{SITE_URL}/{lang}/{slug}/"
+        )
+
+        search_index.append({
+            "title": title,
+            "url": f"/{lang}/{slug}/"
+        })
+
+# =========================================================
+# BLOG POSTS
+# =========================================================
+
+for lang in LANGUAGES:
+
+    for blog in BLOGS:
+
+        slug = blog["slug"]
+
+        title = blog["title"]
+
+        category = blog["category"]
+
+        affiliate_link = affiliate_url(cat_key=category)
+
+        products = [
+            "Premium Deluxe Costume",
+            "LED Accessory Kit",
+            "Movie Replica Edition",
+            "Collector Cosplay Version"
+        ]
+
+        html = render(
+            "blog.html",
+            {
+                "lang": lang,
+                "title": title,
+                "description": title,
+                "canonical": f"{SITE_URL}/{lang}/blog/{slug}/",
+                "h1": title,
+                "subtitle": "Complete Buyer Guide",
+                "intro": f"Discover the best {title.lower()} available this season.",
+                "products": products,
+                "affiliate_link": affiliate_link,
+                "nav_links": [
+                    {
+                        "name": "Home",
+                        "url": f"/{lang}/"
+                    }
+                ],
+                "hreflangs": [
+                    {
+                        "lang": l,
+                        "url": f"{SITE_URL}/{l}/blog/{slug}/"
+                    }
+                    for l in LANGUAGES
+                ]
+            }
+        )
+
+        out_path = f"{OUTPUT_DIR}/{lang}/blog/{slug}/index.html"
+
+        write_file(out_path, html)
+
+        sitemap_urls.append(
+            f"{SITE_URL}/{lang}/blog/{slug}/"
+        )
+
+        rss_items.append({
+            "title": title,
+            "url": f"{SITE_URL}/{lang}/blog/{slug}/"
+        })
+
+# =========================================================
+# RSS FEED
+# =========================================================
+
+rss_xml = f"""<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0">
+
+<channel>
+
+<title>Halloween Costumes 2026</title>
+
+<link>{SITE_URL}</link>
+
+<description>Latest Halloween costume guides and trend reports.</description>
+
 """
 
-with open(robots_path, "w", encoding="utf-8") as f:
-    f.write(robots_txt_content.strip())
-print("✔ robots.txt rules profile deployed cleanly.")
-print("🏁 Vulture Platform Stack Run Execution Complete.")
+for item in rss_items:
+
+    rss_xml += f"""
+
+<item>
+<title>{item["title"]}</title>
+<link>{item["url"]}</link>
+</item>
+
+"""
+
+rss_xml += """
+
+</channel>
+
+</rss>
+"""
+
+write_file(
+    f"{OUTPUT_DIR}/rss.xml",
+    rss_xml
+)
+
+# =========================================================
+# SITEMAP
+# =========================================================
+
+sitemap = """<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+"""
+
+for url in sitemap_urls:
+
+    sitemap += f"""
+
+<url>
+<loc>{url}</loc>
+<lastmod>{TODAY}</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
+
+"""
+
+sitemap += "</urlset>"
+
+write_file(
+    f"{OUTPUT_DIR}/sitemap.xml",
+    sitemap
+)
+
+# =========================================================
+# SEARCH INDEX
+# =========================================================
+
+write_file(
+    f"{OUTPUT_DIR}/search.json",
+    json.dumps(search_index, indent=2)
+)
+
+# =========================================================
+# ROBOTS.TXT
+# =========================================================
+
+robots = f"""
+User-agent: *
+
+Allow: /
+
+Sitemap: {SITE_URL}/sitemap.xml
+"""
+
+write_file(
+    f"{OUTPUT_DIR}/robots.txt",
+    robots
+)
+
+# =========================================================
+# LLMS.TXT
+# =========================================================
+
+llms = f"""
+# Halloween Costumes 2026
+
+Site: {SITE_URL}
+
+Generated: {TODAY}
+
+"""
+
+for page in PAGES:
+
+    llms += f"""
+
+- {page["title"]}
+
+"""
+
+write_file(
+    f"{OUTPUT_DIR}/llms.txt",
+    llms
+)
+
+print("✅ BUILD COMPLETE")
