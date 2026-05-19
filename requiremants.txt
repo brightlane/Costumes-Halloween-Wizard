@@ -1,4 +1,9 @@
 Jinja2==3.1.4
 MarkupSafe==2.1.5
-lxml==5.2.2
+
+# HTML / parsing safety (optional but strongly recommended)
 beautifulsoup4==4.12.3
+lxml==5.2.2
+
+# future-proofing (safe for SEO / scraping / expansion)
+requests==2.32.3
