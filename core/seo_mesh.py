@@ -1,49 +1,113 @@
-# core/seo_mesh.py
+from collections import defaultdict
 
-from core.routes import slug_url
+# =========================================================
+# PAGE CLASSIFICATION (SEO INTENT GRAPH)
+# =========================================================
 
-# ---------------------------------------------------------
-# SEO MESH GRAPH (RELATIONSHIPS BETWEEN PAGES)
-# ---------------------------------------------------------
-
-MESH = {
-    "index": ["women", "men", "kids", "teen", "baby"],
-
-    "women": ["men", "kids", "teen"],
-    "men": ["women", "kids", "adult"],
-    "kids": ["girls", "boys", "toddler", "baby"],
-    "girls": ["kids", "women"],
-    "boys": ["kids", "men"],
-    "toddler": ["baby", "kids"],
-    "baby": ["toddler", "kids"],
-    "teen": ["women", "men", "kids"],
-    "adult": ["men", "women"]
+HUB_PAGES = {
+    "index",
+    "womens-costumes-2026",
+    "mens-costumes-online",
+    "kids-halloween-outfits",
+    "infant-baby-costumes"
 }
 
-# ---------------------------------------------------------
-# BUILD INTERNAL LINK BLOCK
-# ---------------------------------------------------------
+# =========================================================
+# GRAPH BUILDER
+# =========================================================
 
-def build_mesh_links(slug: str, limit: int = 6) -> str:
-    related = MESH.get(slug, ["index"])
+class SEOMeshEngine:
+    def __init__(self, routes):
+        self.routes = routes
+        self.graph = defaultdict(list)
+        self.slug_map = {r["slug"]: r for r in routes}
 
-    links = []
+    # -----------------------------------------------------
+    # NODE TYPE DETECTION
+    # -----------------------------------------------------
 
-    for target in related[:limit]:
-        links.append(f'<a href="{slug_url(target)}">{target.replace("-", " ").title()}</a>')
+    def node_type(self, slug):
+        if slug in HUB_PAGES:
+            return "hub"
+        return "cluster"
 
-    return "<div class='seo-mesh'>" + " | ".join(links) + "</div>"
+    # -----------------------------------------------------
+    # BUILD GRAPH CONNECTIONS
+    # -----------------------------------------------------
 
-# ---------------------------------------------------------
-# OPTIONAL: CONTEXT BOOST LINKS (footer reinforcement)
-# ---------------------------------------------------------
+    def build_graph(self):
+        slugs = [r["slug"] for r in self.routes]
 
-def build_footer_mesh():
-    return f"""
-    <div class="footer-mesh">
-        <a href="{slug_url('index')}">Home</a> |
-        <a href="{slug_url('women')}">Women</a> |
-        <a href="{slug_url('men')}">Men</a> |
-        <a href="{slug_url('kids')}">Kids</a>
-    </div>
-    """
+        for slug in slugs:
+            for target in slugs:
+                if slug == target:
+                    continue
+
+                self.graph[slug].append({
+                    "slug": target,
+                    "type": self.edge_type(slug, target),
+                    "weight": self.weight(slug, target)
+                })
+
+        return self.graph
+
+    # -----------------------------------------------------
+    # EDGE TYPE LOGIC
+    # -----------------------------------------------------
+
+    def edge_type(self, source, target):
+        if source in HUB_PAGES:
+            return "hub_link"
+        if target in HUB_PAGES:
+            return "upward_link"
+        return "peer_link"
+
+    # -----------------------------------------------------
+    # WEIGHTING SYSTEM (REAL SEO CONTROL)
+    # -----------------------------------------------------
+
+    def weight(self, source, target):
+        source_type = self.node_type(source)
+        target_type = self.node_type(target)
+
+        # HUB → EVERYTHING (strong)
+        if source_type == "hub":
+            return 1.0
+
+        # CLUSTER → HUB (important upward signal)
+        if target_type == "hub":
+            return 0.8
+
+        # CLUSTER → CLUSTER (weaker to avoid dilution)
+        return 0.3
+
+    # -----------------------------------------------------
+    # GET OPTIMIZED LINKS FOR A PAGE
+    # -----------------------------------------------------
+
+    def get_links(self, slug, limit=6):
+        links = self.graph.get(slug, [])
+
+        sorted_links = sorted(
+            links,
+            key=lambda x: x["weight"],
+            reverse=True
+        )
+
+        return sorted_links[:limit]
+
+    # -----------------------------------------------------
+    # CONTEXT-AWARE SEO MESH OUTPUT
+    # -----------------------------------------------------
+
+    def build_mesh_for_page(self, slug):
+        links = self.get_links(slug)
+
+        return [
+            {
+                "label": self.slug_map[l["slug"]]["title"],
+                "url": f"{l['slug']}.html",
+                "weight": l["weight"]
+            }
+            for l in links
+        ]
