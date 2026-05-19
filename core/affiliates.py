@@ -1,45 +1,60 @@
-from urllib.parse import quote
+# core/affiliates.py
+
+from urllib.parse import urlencode
 
 # =========================================================
-# AFFILIATE CONFIG (KEEP YOUR TRACKING INTACT)
+# GLOBAL AFFILIATE CONFIG
 # =========================================================
 
-AFF_BASE = (
-    "https://www.linkconnector.com/ta.php"
-    "?lc=007949060109004909"
-    "&atid=WebCostume"
-)
-
-DEFAULT_DOMAIN = "https://www.halloweencostumes.com/"
+AFFILIATE_ID = "your_affiliate_id_here"
+BASE_OUTBOUND = "https://example.com/deals"  # replace with real merchant base
 
 # =========================================================
-# BUILD CLEAN DESTINATION URL
+# CORE AFFILIATE LINK BUILDER
 # =========================================================
 
-def build_destination(category=None, search=None, url=None):
+def affiliate_link(slug: str, campaign: str = "default", label: str = "Shop Now") -> str:
+    """
+    Generates tracked affiliate URLs consistently across entire site.
+    """
 
-    if url:
-        return url
+    params = {
+        "aff": AFFILIATE_ID,
+        "src": campaign,
+        "tag": slug
+    }
 
-    if category:
-        return f"{DEFAULT_DOMAIN}{category}.html"
+    url = f"{BASE_OUTBOUND}?{urlencode(params)}"
 
-    if search:
-        q = quote(search.strip().replace(" ", "+"))
-        return f"{DEFAULT_DOMAIN}search?q={q}"
+    return f'<a href="{url}" rel="nofollow sponsored">{label}</a>'
 
-    return DEFAULT_DOMAIN
 
 # =========================================================
-# MAIN AFFILIATE WRAPPER
+# CATEGORY MAPPING (IMPORTANT FOR SEO + CONVERSION)
 # =========================================================
 
-def affiliate_link(category=None, search=None, url=None):
+AFFILIATE_CAMPAIGNS = {
+    "index": "home",
+    "women": "women_costumes",
+    "men": "men_costumes",
+    "kids": "kids_costumes",
+    "girls": "girls_costumes",
+    "boys": "boys_costumes",
+    "toddler": "toddler_costumes",
+    "baby": "baby_costumes",
+    "teen": "teen_costumes",
+    "adult": "adult_costumes",
+}
 
-    destination = build_destination(
-        category=category,
-        search=search,
-        url=url
+
+def category_affiliate(slug: str) -> str:
+    """
+    Returns category-specific affiliate link.
+    """
+    campaign = AFFILIATE_CAMPAIGNS.get(slug, "generic")
+
+    return affiliate_link(
+        slug=slug,
+        campaign=campaign,
+        label="Shop Deals ➜"
     )
-
-    return f"{AFF_BASE}&url={quote(destination, safe='')}"
