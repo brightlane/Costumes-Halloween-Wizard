@@ -1,0 +1,137 @@
+[
+  {
+    "slug": "index",
+    "title": "Halloween Costumes 2026",
+    "description": "Shop the best Halloween costumes for 2026 including scary, funny, anime, couples, and family costumes.",
+    "body": "Welcome to the ultimate Halloween costume destination for 2026. Browse trending costumes for adults, kids, couples, groups, anime fans, horror lovers, gamers, and cosplay enthusiasts. Discover premium-quality costumes, accessories, masks, wigs, props, and decorations with worldwide shipping available.",
+    "category": "home"
+  },
+
+  {
+    "slug": "womens-costumes",
+    "title": "Women's Halloween Costumes 2026",
+    "description": "Discover trending women's Halloween costumes for 2026 including witches, vampires, anime cosplay, and movie-inspired outfits.",
+    "body": "Browse stylish women's Halloween costumes featuring classic horror icons, fantasy queens, gothic looks, cosplay favorites, and movie-inspired outfits. Our women's collection includes elegant dresses, premium fabrics, realistic accessories, and matching costume sets for parties and conventions.",
+    "category": "womens"
+  },
+
+  {
+    "slug": "mens-costumes",
+    "title": "Men's Halloween Costumes 2026",
+    "description": "Shop men's Halloween costumes including horror villains, superheroes, anime cosplay, and funny costumes.",
+    "body": "Explore the best men's Halloween costumes for 2026 featuring horror legends, superheroes, fantasy warriors, anime cosplay outfits, and hilarious novelty costumes. Perfect for Halloween parties, haunted attractions, conventions, and themed events.",
+    "category": "mens"
+  },
+
+  {
+    "slug": "anime-costumes",
+    "title": "Anime Halloween Costumes 2026",
+    "description": "Top anime Halloween costumes inspired by trending anime series, manga, and cosplay culture.",
+    "body": "Find premium anime Halloween costumes inspired by iconic anime franchises, manga characters, and cosplay culture. Our anime collection includes screen-accurate outfits, cosplay wigs, props, weapons, cloaks, boots, and collector-grade accessories.",
+    "category": "anime"
+  },
+
+  {
+    "slug": "wizard-costumes",
+    "title": "Wizard Halloween Costumes",
+    "description": "Magical wizard costumes for Halloween parties, fantasy cosplay, and conventions.",
+    "body": "Step into a magical fantasy world with wizard costumes featuring mystical robes, enchanted staffs, glowing accessories, sorcerer cloaks, and fantasy-inspired outfits for adults and kids.",
+    "category": "wizard"
+  },
+
+  {
+    "slug": "scary-costumes",
+    "title": "Scary Halloween Costumes 2026",
+    "description": "Terrifying scary Halloween costumes including zombies, vampires, clowns, demons, and horror movie icons.",
+    "body": "Explore terrifying scary Halloween costumes designed to create unforgettable horror experiences. Discover zombies, haunted clowns, demons, slashers, vampires, skeletons, ghosts, and realistic horror makeup accessories.",
+    "category": "scary"
+  },
+
+  {
+    "slug": "funny-costumes",
+    "title": "Funny Halloween Costumes 2026",
+    "description": "Funny Halloween costumes that guarantee laughs at every Halloween party.",
+    "body": "Browse hilarious Halloween costumes featuring inflatable characters, food costumes, meme-inspired outfits, parody costumes, and novelty designs perfect for parties and costume contests.",
+    "category": "funny"
+  },
+
+  {
+    "slug": "couples-costumes",
+    "title": "Couples Halloween Costumes 2026",
+    "description": "Matching couples Halloween costumes inspired by movies, TV shows, anime, and classic horror.",
+    "body": "Find coordinated couples Halloween costumes featuring iconic duos, fantasy lovers, anime pairings, funny matching outfits, horror couples, and cosplay sets designed for unforgettable Halloween photos and parties.",
+    "category": "couples"
+  },
+
+  {
+    "slug": "kids-costumes",
+    "title": "Kids Halloween Costumes 2026",
+    "description": "Kids Halloween costumes including superheroes, princesses, animals, and cartoon characters.",
+    "body": "Shop adorable kids Halloween costumes for toddlers, children, and teens featuring superheroes, princesses, magical creatures, dinosaurs, cartoon characters, and fun fantasy costumes.",
+    "category": "kids"
+  },
+
+  {
+    "slug": "horror-costumes",
+    "title": "Horror Movie Costumes 2026",
+    "description": "Horror movie costumes inspired by iconic slasher films and horror franchises.",
+    "body": "Discover horror movie costumes inspired by legendary horror franchises, slasher villains, supernatural creatures, haunted dolls, ghostly spirits, and cult classic monsters.",
+    "category": "horror"
+  },
+
+  {
+    "slug": "cosplay-costumes",
+    "title": "Cosplay Costumes 2026",
+    "description": "Professional cosplay costumes for anime conventions, gaming expos, and Halloween.",
+    "body": "Explore premium cosplay costumes built for conventions, cosplay competitions, photoshoots, and Halloween parties. Featuring anime, gaming, fantasy, and cinematic designs with collector-quality details.",
+    "category": "convention"
+  },
+
+  {
+    "slug": "pet-costumes",
+    "title": "Pet Halloween Costumes",
+    "description": "Cute and funny Halloween costumes for dogs, cats, and pets.",
+    "body": "Dress your pets in adorable Halloween costumes including pumpkins, superheroes, dragons, hot dogs, witches, and funny novelty outfits designed for comfort and safety.",
+    "category": "pet"
+  },
+
+  {
+    "slug": "plus-size-costumes",
+    "title": "Plus Size Halloween Costumes 2026",
+    "description": "Comfortable and stylish plus size Halloween costumes for all themes and styles.",
+    "body": "Find flattering plus size Halloween costumes designed for comfort, style, and confidence. Browse fantasy outfits, horror themes, movie costumes, cosplay designs, and matching couples costumes available in extended sizes.",
+    "category": "plussize"
+  },
+
+  {
+    "slug": "anime-cosplay-wigs",
+    "title": "Anime Cosplay Wigs",
+    "description": "Anime cosplay wigs styled for conventions, Halloween, and professional cosplay photography.",
+    "body": "Shop anime cosplay wigs inspired by iconic anime heroes, villains, magical girls, and fantasy characters. Heat-resistant fibers, realistic styling, and convention-ready craftsmanship.",
+    "category": "cosplaywigs"
+  },
+
+  {
+    "slug": "halloween-decorations",
+    "title": "Halloween Decorations 2026",
+    "description": "Indoor and outdoor Halloween decorations for haunted houses and parties.",
+    "body": "Transform your home into a haunted attraction with Halloween decorations including animatronics, fog machines, pumpkins, tombstones, skeletons, spider webs, lights, and horror props.",
+    "category": "decorations"
+  },
+
+  {
+    "slug": "video-game-costumes",
+    "title": "Video Game Halloween Costumes",
+    "description": "Gaming-inspired Halloween costumes from popular video games and esports franchises.",
+    "body": "Find video game costumes inspired by fantasy RPGs, competitive shooters, retro classics, esports franchises, cyberpunk adventures, and legendary gaming heroes.",
+    "category": "videogame"
+  },
+
+  {
+    "slug": "family-costumes",
+    "title": "Family Halloween Costumes",
+    "description": "Matching family Halloween costume ideas for parents, kids, and groups.",
+    "body": "Coordinate unforgettable family Halloween costumes with matching themes inspired by cartoons, movies, fantasy adventures, superheroes, and funny group concepts.",
+    "category": "matchingfamily"
+  }
+]
