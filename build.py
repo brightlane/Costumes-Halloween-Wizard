@@ -1,10 +1,10 @@
 import os
 from datetime import date
-from urllib.parse import quote
 
 from core.renderer import render_page
 from core.schema import website_schema, organization_schema, collection_schema
 from core.seo import canonical_url, hreflang_tags, build_title, build_description
+from core.build_content import build_content
 
 # =========================================================
 # CONFIG
@@ -15,67 +15,37 @@ OUTPUT_DIR = "dist"
 TODAY = str(date.today())
 SITE_NAME = "Halloween Costumes 2026"
 
-# IMPORTANT: SINGLE SOURCE OF TRUTH ROUTING TABLE
+# =========================================================
+# ROUTES (SINGLE SOURCE OF TRUTH)
+# =========================================================
+
 ROUTES = [
     {
         "slug": "index",
         "title": "Halloween Costumes 2026",
         "description": "The best Halloween costumes for 2026",
-        "primary_keyword": "halloween costumes"
     },
     {
         "slug": "womens-costumes-2026",
-        "title": "Women's Halloween Costumes 2026",
+        "title": "Women's Halloween Costumes",
         "description": "Top trending women's costumes for Halloween 2026",
-        "primary_keyword": "women halloween costumes"
     },
     {
         "slug": "mens-costumes-online",
-        "title": "Men's Halloween Costumes 2026",
+        "title": "Men's Halloween Costumes",
         "description": "Best men's Halloween costumes and ideas",
-        "primary_keyword": "mens halloween costumes"
     },
     {
         "slug": "kids-halloween-outfits",
-        "title": "Kids Halloween Costumes 2026",
+        "title": "Kids Halloween Costumes",
         "description": "Best kids Halloween costumes for all ages",
-        "primary_keyword": "kids halloween costumes"
     },
     {
         "slug": "infant-baby-costumes",
-        "title": "Baby Halloween Costumes 2026",
+        "title": "Baby Halloween Costumes",
         "description": "Cute and safe baby Halloween costumes",
-        "primary_keyword": "baby halloween costumes"
     }
 ]
-
-# =========================================================
-# AFFILIATE SYSTEM (FORCE CONSISTENCY)
-# =========================================================
-
-AFFILIATE_ID = "your-affiliate-id"
-
-def affiliate_link(base_url: str, slug: str) -> str:
-    """
-    ALWAYS preserves affiliate tracking across all pages
-    """
-    return f"{base_url}/{slug}.html?aff={AFFILIATE_ID}"
-
-# =========================================================
-# SEO MESH SYSTEM (INTERNAL LINK GRAPH)
-# =========================================================
-
-def build_internal_links(current_slug: str):
-    links = []
-
-    for route in ROUTES:
-        if route["slug"] != current_slug:
-            links.append({
-                "label": route["title"],
-                "url": f"{route['slug']}.html?aff={AFFILIATE_ID}"
-            })
-
-    return links
 
 # =========================================================
 # OUTPUT HELPERS
@@ -91,7 +61,20 @@ def ensure_dir():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # =========================================================
-# PAGE BUILDER
+# SEO MESH (SAFE INTERNAL LINK SYSTEM)
+# =========================================================
+
+def build_internal_links(current_slug):
+    return [
+        {
+            "label": r["title"],
+            "url": f"{r['slug']}.html"
+        }
+        for r in ROUTES if r["slug"] != current_slug
+    ]
+
+# =========================================================
+# PAGE BUILD
 # =========================================================
 
 def build_pages():
@@ -104,13 +87,16 @@ def build_pages():
 
         internal_links = build_internal_links(slug)
 
+        affiliate_url = f"{SITE_URL}/{slug}.html?aff=1"
+
+        content_html = build_content(page, internal_links, affiliate_url)
+
         context = {
             "site_name": SITE_NAME,
             "title": build_title(page["title"]),
             "description": build_description(page["description"]),
             "canonical": canonical,
 
-            # schemas
             "schema_website": website_schema(SITE_NAME, SITE_URL),
             "schema_org": organization_schema(SITE_NAME, SITE_URL),
             "schema_collection": collection_schema(
@@ -121,28 +107,16 @@ def build_pages():
 
             "hreflang": hreflang_tags(SITE_URL, slug),
 
-            # CORE CONTENT
-            "content": f"""
-                <h1>{page['title']}</h1>
-                <p>{page['description']}</p>
-
-                <h2>Recommended Vault Categories</h2>
-                <ul>
-                    {''.join([f"<li><a href='{link['url']}'>{link['label']}</a></li>" for link in internal_links])}
-                </ul>
-
-                <a href="{affiliate_link(SITE_URL, slug)}">
-                    Shop {page['title']} Deals ➜
-                </a>
-            """
+            # CORE CONTENT PIPELINE (ONLY SOURCE)
+            "content": content_html
         }
 
-        render_page(page["template"], output_path(slug), context)
+        render_page("page.html", output_path(slug), context)
 
         print(f"✔ Built page: {slug}")
 
 # =========================================================
-# BLOG SAFE PLACEHOLDER (NO BREAKS)
+# BLOG (SAFE STUB)
 # =========================================================
 
 def build_blog():
@@ -152,7 +126,7 @@ def build_blog():
     with open(f"{blog_dir}/index.html", "w", encoding="utf-8") as f:
         f.write("<h1>Blog Index</h1>")
 
-    print("✔ Blog built (safe stub)")
+    print("✔ Blog built")
 
 # =========================================================
 # GLOBAL FILES
@@ -165,6 +139,7 @@ def build_global_files():
 
     for page in ROUTES:
         url = canonical_url(SITE_URL, "en", page["slug"])
+
         sitemap += f"""
 <url>
     <loc>{url}</loc>
@@ -189,14 +164,14 @@ Sitemap: {SITE_URL}/sitemap.xml
     with open(f"{OUTPUT_DIR}/robots.txt", "w", encoding="utf-8") as f:
         f.write(robots)
 
-    print("✔ Global SEO files built")
+    print("✔ SEO files built")
 
 # =========================================================
 # MAIN PIPELINE
 # =========================================================
 
 def build_all():
-    print("🚀 Starting stable SEO build system...")
+    print("🚀 Starting LOCKED SEO build system...")
     build_pages()
     build_blog()
     build_global_files()
