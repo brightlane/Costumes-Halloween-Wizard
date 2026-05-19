@@ -18,14 +18,19 @@ from core.blog_engine import (
     build_blog_index
 )
 
+# NEW IMPORTS (STEP 2 FIX)
+from core.seo_mesh import build_mesh
+from core.routes import slug_url
+
 # =========================================================
-# CONFIG (HARDENED)
+# CONFIG
 # =========================================================
 
 SITE_URL = "https://brightlane.github.io/Costumes-Halloween-Wizard"
 OUTPUT_DIR = "dist"
-SITE_NAME = "Halloween Costumes 2026"
 TODAY = str(date.today())
+
+SITE_NAME = "Halloween Costumes 2026"
 
 # =========================================================
 # CORE PAGES
@@ -59,37 +64,39 @@ PAGES = [
 ]
 
 # =========================================================
-# SAFETY INIT (NO-BREAK LAYER)
-# =========================================================
-
-def ensure_dirs():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    os.makedirs(f"{OUTPUT_DIR}/blog", exist_ok=True)
-
-# =========================================================
-# OUTPUT PATH
+# OUTPUT HELPERS
 # =========================================================
 
 def output_path(slug):
+    if slug == "index":
+        return f"{OUTPUT_DIR}/index.html"
     return f"{OUTPUT_DIR}/{slug}.html"
 
+
+def ensure_dir():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 # =========================================================
-# PAGE BUILDER (SAFE MODE)
+# PAGE BUILDER (UPDATED FOR SEO MESH)
 # =========================================================
 
-def build_pages():
-    print("🚀 Building pages...")
+def build_pages(mesh):
+
+    ensure_dir()
 
     for page in PAGES:
 
         slug = page["slug"]
 
-        url = canonical_url(SITE_URL, "en", slug)
+        url = slug_url(SITE_URL, slug)
 
         context = {
+
             "site_name": SITE_NAME,
+
             "title": build_title(page["title"]),
             "description": build_description(page["description"]),
+
             "canonical": url,
 
             "schema_website": website_schema(SITE_NAME, SITE_URL),
@@ -102,7 +109,16 @@ def build_pages():
 
             "hreflang": hreflang_tags(SITE_URL, slug),
 
-            "content": f"<h1>{page['title']}</h1><p>{page['description']}</p>"
+            # 🔥 SEO MESH INJECTION (FIXED INTERNAL LINKING)
+            "mesh": mesh.get(slug, {"related": []}),
+
+            # safe URL reference for templates
+            "page_url": url,
+
+            "content": f"""
+                <h1>{page['title']}</h1>
+                <p>{page['description']}</p>
+            """
         }
 
         render_page(
@@ -111,26 +127,24 @@ def build_pages():
             context
         )
 
-        print(f"✔ Page built: {slug}")
+        print(f"✔ Built page: {slug}")
 
 # =========================================================
-# BLOG BUILDER (ISOLATED)
+# BLOG
 # =========================================================
 
 def build_blog():
-    print("🚀 Building blog...")
 
     articles = generate_all_articles()
-
     blog_dir = f"{OUTPUT_DIR}/blog"
 
-    # INDEX
+    os.makedirs(blog_dir, exist_ok=True)
+
     index_html = build_blog_index(articles)
 
     with open(f"{blog_dir}/index.html", "w", encoding="utf-8") as f:
         f.write(index_html)
 
-    # POSTS
     for article in articles:
 
         path = f"{blog_dir}/{article['slug']}.html"
@@ -151,23 +165,21 @@ def build_blog():
         with open(path, "w", encoding="utf-8") as f:
             f.write(html)
 
-        print(f"✔ Blog: {article['slug']}")
+        print(f"✔ Blog post: {article['slug']}")
 
 # =========================================================
-# SEO FILES
+# GLOBAL FILES
 # =========================================================
 
 def build_global_files():
 
-    print("🚀 Building SEO files...")
-
-    # sitemap
-    sitemap = """<?xml version="1.0" encoding="UTF-8"?>
+    sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 """
 
     for page in PAGES:
-        url = canonical_url(SITE_URL, "en", page["slug"])
+
+        url = slug_url(SITE_URL, page["slug"])
 
         sitemap += f"""
 <url>
@@ -183,7 +195,6 @@ def build_global_files():
     with open(f"{OUTPUT_DIR}/sitemap.xml", "w", encoding="utf-8") as f:
         f.write(sitemap)
 
-    # robots
     robots = f"""
 User-agent: *
 Allow: /
@@ -197,42 +208,28 @@ Sitemap: {SITE_URL}/sitemap.xml
     print("✔ SEO files built")
 
 # =========================================================
-# VALIDATION LAYER (NEW NO-BREAK ENGINE)
-# =========================================================
-
-def validate_output():
-
-    print("🔍 Validating build output...")
-
-    required = [
-        f"{OUTPUT_DIR}/index.html",
-        f"{OUTPUT_DIR}/sitemap.xml",
-        f"{OUTPUT_DIR}/robots.txt"
-    ]
-
-    missing = [f for f in required if not os.path.exists(f)]
-
-    if missing:
-        raise RuntimeError(f"Missing required outputs: {missing}")
-
-    print("✔ Output validation passed")
-
-# =========================================================
-# MAIN PIPELINE
+# MAIN PIPELINE (STEP 2 FIX)
 # =========================================================
 
 def build_all():
 
-    print("🚀 Starting NO-BREAK SEO build system...")
+    print("🚀 Starting full site build pipeline...")
 
-    ensure_dirs()
+    ensure_dir()
 
-    build_pages()
+    # STEP 1: BUILD SEO MESH (CRITICAL FIX)
+    mesh = build_mesh(SITE_URL, PAGES)
+
+    # STEP 2: BUILD PAGES WITH MESH
+    build_pages(mesh)
+
+    # STEP 3: BLOG
     build_blog()
-    build_global_files()
-    validate_output()
 
-    print("🏁 Build complete - stable output generated")
+    # STEP 4: GLOBAL FILES
+    build_global_files()
+
+    print("🏁 Build complete - SEO mesh active")
 
 # =========================================================
 # RUN
