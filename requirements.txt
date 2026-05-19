@@ -1,5 +1,6 @@
-Jinja2==3.1.4
-MarkupSafe==2.1.5
-beautifulsoup4==4.12.3
-lxml==5.2.2
-requests==2.32.3
+# Vulture Engine — build dependencies
+# All core modules (os, datetime, urllib, collections) are Python stdlib — no install needed.
+# This file intentionally minimal to prevent pip install failures in GitHub Actions.
+
+# No third-party dependencies required.
+# Add here only if you introduce new imports to build.py.
