@@ -6,9 +6,8 @@
 
   Run:  python3 build.py
 
-  Generates 25+ pages covering EVERY category on
-  halloweencostumes.com — plus categories they DON'T have.
-  Goal: #1 Halloween affiliate site in the world.
+  Generates 95+ distinct, isolated SEO category pages covering 
+  every niche target with optimized semantic structural mappings.
 ═══════════════════════════════════════════════════════════
 """
 
@@ -18,9 +17,9 @@ from datetime import date
 from urllib.parse import quote
 
 # ─────────────────────────────────────────────────────────
-# CONFIG (UPDATED WITH NEW AFFILIATE CREDENTIALS)
+# CONFIG (UPDATED WITH SPECIFIC AFFILIATE CREDENTIALS)
 # ─────────────────────────────────────────────────────────
-SITE_URL       = "https://brightlane.github.io/HalloweenCostumes"
+SITE_URL       = "https://brightlane.github.io/Costumes-Halloween-Wizard"
 AFF_BASE       = "https://www.linkconnector.com/ta.php?lc=007949060109004909&atid=WebCostume"
 OWNER          = 'Benny "Palmo Kid" Palmarino'
 LC_ID          = "7949"
@@ -180,7 +179,7 @@ def aff(cat_key=None, search=None):
     return f"{AFF_BASE}&url={quote(dest, safe='')}"
 
 # ─────────────────────────────────────────────────────────
-# PAGES DEFINITION (UPDATED WITH DISTINCT SEO FILENAMES)
+# PAGES MATRIX (SEO OPTIMIZED STANDALONE TARGET FILENAMES)
 # ─────────────────────────────────────────────────────────
 PAGES = {
     "index": {
@@ -361,12 +360,13 @@ PAGES = {
     }
 }
 
-# Add structural entries dynamically with distinct filenames (e.g., 'jujutsukaisen' -> 'best-jujutsukaisen-costumes.html')
+# ─────────────────────────────────────────────────────────
+# PROGRAMMATIC LOOP FOR EXTENDED LAYOUTS
+# ─────────────────────────────────────────────────────────
+# Populates missing keys from CAT_URLS into PAGES automatically using distinct names
 for key, mapping in CAT_URLS.items():
     if key not in PAGES and key != "home":
         readable = key.replace("cosplay"," Cosplay ").replace("decor"," Decor").capitalize()
-        
-        # Build completely distinct filename layout
         distinct_filename = f"best-{key.lower()}-costumes.html"
         
         PAGES[key] = {
@@ -378,3 +378,82 @@ for key, mapping in CAT_URLS.items():
             "en_h1sub": "Beat the Competition with Exclusive Deals",
             "en_body": f"Explore our ultimate hub for premium {readable} apparel and design accessories. Tailored for absolute accuracy, maximum durability, and authentic detailing across all operational metrics."
         }
+
+# ─────────────────────────────────────────────────────────
+# FILE GENERATOR ENGINE EXECUTOR
+# ─────────────────────────────────────────────────────────
+print(f"🚀 Vulture Engine starting... Generating {len(PAGES)} pages.")
+
+for key, page in PAGES.items():
+    filename = page["file"]
+    file_path = os.path.join(OUTPUT_DIR, filename)
+    
+    # 1. Build Navigation dynamically for your pages
+    nav_html = "".join([
+        f'<a href="{p["file"]}" class="nav-link">{p["icon"]} {p["en_title"].split("|")[0].strip()}</a>'
+        for p in PAGES.values() if p.get("nav_group") == "shop" or p.get("group") == "gender"
+    ])
+    
+    # 2. Basic responsive layout structure template
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{page["en_title"]}</title>
+    <meta name="description" content="{page["en_desc"]}">
+    <meta name="keywords" content="{page.get("keywords", "")}">
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f9f9f9; }}
+        header {{ background: #111; color: #fff; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 30px; }}
+        header h1 {{ color: #ff6600; margin: 0 0 10px 0; }}
+        nav {{ display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
+        .nav-link {{ text-decoration: none; color: #444; padding: 8px 12px; background: #eee; border-radius: 4px; font-size: 0.9rem; transition: background 0.2s; }}
+        .nav-link:hover {{ background: #ff6600; color: #fff; }}
+        main {{ background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }}
+        .cta-btn {{ display: inline-block; background: #ff6600; color: #fff; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; font-size: 1.2rem; margin: 20px 0; }}
+        .cta-btn:hover {{ background: #e05500; }}
+        footer {{ margin-top: 5px; text-align: center; padding: 20px; color: #777; font-size: 0.85rem; }}
+    </style>
+    
+    <script type="application/ld+json">
+    {{
+        "@context": "https://schema.org",
+        "@type": "{page.get("schema_type", "CollectionPage")}",
+        "name": "{page["en_title"]}",
+        "description": "{page["en_desc"]}"
+    }}
+    </script>
+</head>
+<body>
+
+    <header>
+        <h1>{page["icon"]} {page["en_h1"]}</h1>
+        <p>{page["en_h1sub"]}</p>
+    </header>
+
+    <nav>
+        {nav_html}
+    </nav>
+
+    <main>
+        <p>{page["en_body"]}</p>
+        <center>
+            <a href="{aff(page["cat_key"])}" class="cta-btn" target="_blank" rel="nofollow noopener">
+                Shop {page["en_h1"]} Deals Online Here ➔
+            </a>
+        </center>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 {OWNER} | Affiliate Platform | Powered by Vulture Engine</p>
+    </footer>
+
+</body>
+</html>"""
+
+    # 3. Write out the standalone file
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+print("✅ System run complete! All independent programmatic file targets created.")
