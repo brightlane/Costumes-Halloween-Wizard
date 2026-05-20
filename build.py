@@ -479,27 +479,263 @@ def render_page(page, mesh_links):
 # =========================================================
 
 BLOG_ARTICLES = [
-    {"slug":"best-halloween-costumes-2026",  "title":f"Best Halloween Costumes {YEAR}",          "description":f"Top Halloween costume trends for {YEAR} — the ultimate guide.",              "merchant":"/",                              "body":f"<p>Looking for the best Halloween costumes in {YEAR}? From viral pop-culture characters to classic horror icons, this year's selection is the biggest ever. Whether you want scary, funny, sexy or group costumes, our full guide covers every trend, budget, and age group.</p>"},
-    {"slug":"cheap-costumes-under-20",       "title":"Cheap Halloween Costumes Under $20",        "description":"Budget Halloween costume ideas that look great without breaking the bank.",    "merchant":"/costumes-on-sale.html", "body":"<p>You don't need to spend a fortune to have an amazing Halloween costume. We've rounded up the best cheap Halloween costumes under $20 — all available online with fast shipping. From funny one-liners to classic characters, these budget picks deliver serious impact.</p>"},
-    {"slug":"kids-halloween-guide",          "title":f"Kids Halloween Costume Guide {YEAR}",      "description":f"Safe, comfortable and adorable kids Halloween costumes for {YEAR}.",         "merchant":"/kids-costumes.html",  "body":f"<p>Picking the perfect Halloween costume for your child in {YEAR}? Our kids' guide covers safety tips, sizing advice, trending characters, and the best costumes for every age — from infants and toddlers all the way up to tweens.</p>"},
-    {"slug":"scary-costume-ideas",           "title":f"Scary Halloween Costume Ideas {YEAR}",     "description":f"The scariest Halloween costumes for {YEAR} — horror, gore, and creepy classics.", "merchant":"/scary-costumes.html","body":f"<p>Ready to terrify? Our scary Halloween costume roundup for {YEAR} covers the most chilling options — from classic horror movie monsters to creepy clowns, zombies, demons, and beyond. These are the costumes that will haunt the night.</p>"},
-    {"slug":"couples-costumes",              "title":f"Couples Halloween Costumes {YEAR}",        "description":f"The best matching couples Halloween costumes for {YEAR}.",                    "merchant":"/couple-costume-ideas.html","body":f"<p>Halloween is more fun with a partner! Our couples costume guide for {YEAR} features the best matching sets — from classic duos and pop-culture pairs to funny couples, horror double-acts, and themed group expansions.</p>"},
+    {
+        "slug":        "best-halloween-costumes-2026",
+        "title":       f"Best Halloween Costumes {YEAR}",
+        "description": f"Top Halloween costume trends for {YEAR} — the ultimate guide.",
+        "merchant":    "/",
+        "related": [
+            ("Women's Costumes", "/womens-costumes-2026.html"),
+            ("Men's Costumes",   "/mens-costumes-online.html"),
+            ("Kids Costumes",     "/kids-halloween-outfits.html"),
+            ("Scary Costumes",    "/scary-horror-costumes.html"),
+            ("Couples Costumes",  "/matching-couples-costumes.html"),
+        ],
+        "body": f"""
+            <p>Looking for the best Halloween costumes in {YEAR}? You've come to the right place.
+            From viral pop-culture characters to classic horror icons, this year's selection is
+            the biggest ever. Whether you want scary, funny, sexy, or group costumes, our guide
+            covers every trend, budget, and age group.</p>
+            <h2>Top Costume Categories for {YEAR}</h2>
+            <p><strong>Scary & Horror</strong> — Horror-inspired looks dominate every year.
+            Classic monsters, slasher villains, and creepy clowns are always top sellers.
+            Shop our <a href="../scary-horror-costumes.html">scary Halloween costumes</a> for
+            the full collection.</p>
+            <p><strong>Pop Culture & TV/Movie</strong> — Whatever's trending on Netflix or at
+            the box office becomes a costume staple. Check our
+            <a href="../best-movies-costumes.html">movie costumes</a> and
+            <a href="../best-tvshows-costumes.html">TV show costumes</a> for the hottest picks.</p>
+            <p><strong>Couples & Groups</strong> — Matching costumes are more popular than ever.
+            Browse <a href="../matching-couples-costumes.html">couples costumes</a> and
+            <a href="../group-family-costumes.html">group costumes</a> for duo and squad ideas.</p>
+            <p><strong>Kids & Family</strong> — From <a href="../infant-baby-costumes.html">baby costumes</a>
+            to <a href="../cool-teen-costumes.html">teen costumes</a>, we cover every age.</p>
+            <h2>When to Order</h2>
+            <p>Order by mid-October to guarantee delivery before Halloween. The best styles
+            sell out fast — shop early for the widest selection.</p>
+        """,
+    },
+    {
+        "slug":        "cheap-costumes-under-20",
+        "title":       "Cheap Halloween Costumes Under $20",
+        "description": "Budget Halloween costume ideas that look great without breaking the bank.",
+        "merchant":    "/costumes-on-sale.html",
+        "related": [
+            ("Clearance Costumes",  "/best-clearance-costumes.html"),
+            ("Budget Costumes",     "/best-budget-costumes.html"),
+            ("Kids Costumes",       "/kids-halloween-outfits.html"),
+            ("Sale Costumes",       "/best-sale-costumes.html"),
+            ("Weekly Deals",        "/best-weeklydeals-costumes.html"),
+        ],
+        "body": f"""
+            <p>You don't need to spend a fortune to have an amazing Halloween costume.
+            The secret? Shop early, shop smart, and know where to look. We've rounded up
+            the best cheap Halloween costumes under $20 — all available online with fast shipping.</p>
+            <h2>Best Budget Costume Ideas</h2>
+            <p><strong>Classic monsters</strong> — Dracula, Frankenstein, and witch costumes
+            regularly come in under $20 and look fantastic. Simple but instantly recognizable.</p>
+            <p><strong>Funny one-liners</strong> — Punny costumes (ceiling fan, formal apology, etc.)
+            are cheap to make and always get laughs. Check our
+            <a href="../funny-novelty-costumes.html">funny costumes</a> page for ideas.</p>
+            <p><strong>Animal costumes</strong> — Cat ears, wolf ears, and animal onesies are
+            perennially affordable. Visit our <a href="../best-animals-costumes.html">animal costumes</a>
+            page for the full range.</p>
+            <p><strong>Sale & clearance</strong> — HalloweenCostumes.com runs sales throughout
+            the season. Our <a href="../best-sale-costumes.html">sale costumes</a> page is updated daily.</p>
+            <h2>Tips for Getting the Best Deal</h2>
+            <p>Order before October 1st for the widest selection at the lowest prices.
+            Shipping costs go up as Halloween approaches, so early ordering saves money twice.</p>
+        """,
+    },
+    {
+        "slug":        "kids-halloween-guide",
+        "title":       f"Kids Halloween Costume Guide {YEAR}",
+        "description": f"Safe, comfortable and adorable kids Halloween costumes for {YEAR}.",
+        "merchant":    "/kids-costumes.html",
+        "related": [
+            ("Baby Costumes",    "/infant-baby-costumes.html"),
+            ("Toddler Costumes", "/cute-toddler-costumes.html"),
+            ("Girls' Costumes",  "/girls-costumes-and-dresses.html"),
+            ("Boys' Costumes",   "/boys-superhero-ninja-costumes.html"),
+            ("Teen Costumes",    "/cool-teen-costumes.html"),
+        ],
+        "body": f"""
+            <p>Picking the perfect Halloween costume for your child in {YEAR}? Our guide covers
+            safety tips, sizing advice, trending characters, and the best costumes for every age —
+            from newborns all the way up to teens.</p>
+            <h2>By Age Group</h2>
+            <p><strong>Babies (0–12 months)</strong> — Soft, snap-closure costumes are safest
+            and most comfortable. Shop <a href="../infant-baby-costumes.html">baby Halloween costumes</a>
+            for adorable pumpkins, animals, and character looks.</p>
+            <p><strong>Toddlers (1–3 years)</strong> — Lightweight and easy to move in.
+            Browse <a href="../cute-toddler-costumes.html">toddler costumes</a> — Paw Patrol,
+            Disney characters, and animals are always top picks.</p>
+            <p><strong>Kids (4–10 years)</strong> — Superheroes, witches, dinosaurs, and
+            pop-culture characters dominate. See the full
+            <a href="../kids-halloween-outfits.html">kids costumes</a> collection.</p>
+            <p><strong>Tweens & Teens (11–17 years)</strong> — This age group wants to choose
+            their own. Let them browse <a href="../cool-teen-costumes.html">teen costumes</a>
+            for the trendiest options.</p>
+            <h2>Safety Tips</h2>
+            <p>Always choose flame-resistant fabrics, ensure good visibility through masks,
+            and add reflective tape if trick-or-treating after dark. Fit should allow full
+            movement — no tripping hazards.</p>
+        """,
+    },
+    {
+        "slug":        "scary-costume-ideas",
+        "title":       f"Scary Halloween Costume Ideas {YEAR}",
+        "description": f"The scariest Halloween costumes for {YEAR} — horror, gore, and creepy classics.",
+        "merchant":    "/scary-costumes.html",
+        "related": [
+            ("Horror Costumes",       "/best-horror-costumes.html"),
+            ("Skeleton Costumes",     "/best-skeletons-costumes.html"),
+            ("Creepy Doll Costumes",  "/best-creepydoll-costumes.html"),
+            ("Gothic Costumes",       "/best-gothic-costumes.html"),
+            ("Halloween Masks",       "/best-masks-costumes.html"),
+        ],
+        "body": f"""
+            <p>Ready to terrify? Our scary Halloween costume guide for {YEAR} covers
+            the most chilling options available — from classic horror movie monsters to
+            creepy clowns, zombies, demons, and beyond.</p>
+            <h2>Scariest Costume Categories</h2>
+            <p><strong>Classic Horror Icons</strong> — Freddy, Jason, Michael Myers, and
+            Ghostface never go out of style. These instantly-recognizable villains make for
+            maximum scare impact with zero explanation needed.</p>
+            <p><strong>Zombies & Undead</strong> — Zombie costumes pair perfectly with SFX
+            makeup for a truly terrifying look. Check our
+            <a href="../best-makeup-costumes.html">Halloween makeup</a> page for blood, wounds,
+            and rot effects to complete the look.</p>
+            <p><strong>Creepy Dolls</strong> — Porcelain doll, ventriloquist dummy, and broken
+            doll costumes are deeply unsettling. Browse
+            <a href="../best-creepydoll-costumes.html">creepy doll costumes</a> for the full range.</p>
+            <p><strong>Gothic & Occult</strong> — Dark Victorian, witch, and occult aesthetics
+            are perennially popular. See <a href="../best-gothic-costumes.html">gothic costumes</a>
+            and <a href="../best-witchaesthetic-costumes.html">witch aesthetic</a> looks.</p>
+            <p><strong>Masks</strong> — A great mask transforms any outfit instantly.
+            Shop <a href="../best-masks-costumes.html">Halloween masks</a> for standalone scares.</p>
+        """,
+    },
+    {
+        "slug":        "couples-costumes",
+        "title":       f"Couples Halloween Costumes {YEAR}",
+        "description": f"The best matching couples Halloween costumes for {YEAR}.",
+        "merchant":    "/couple-costume-ideas.html",
+        "related": [
+            ("Group Costumes",         "/group-family-costumes.html"),
+            ("Matching Family",        "/best-matchingfamily-costumes.html"),
+            ("Women's Costumes",       "/womens-costumes-2026.html"),
+            ("Men's Costumes",         "/mens-costumes-online.html"),
+            ("Friends Group Costumes", "/best-friendscostume-costumes.html"),
+        ],
+        "body": f"""
+            <p>Halloween is more fun with a partner! Our couples costume guide for {YEAR}
+            features the best matching sets — from classic duos and pop-culture pairs to
+            funny couples, horror double-acts, and themed group expansions.</p>
+            <h2>Best Couples Costume Ideas</h2>
+            <p><strong>Classic duos</strong> — Bonnie & Clyde, Romeo & Juliet, Batman & Robin.
+            Timeless pairings that everyone recognizes immediately.</p>
+            <p><strong>Pop culture pairs</strong> — Match whatever's trending —
+            TV couples, movie duos, and gaming pairs are always crowd-pleasers.
+            Check <a href="../best-movies-costumes.html">movie costumes</a> and
+            <a href="../best-tvshows-costumes.html">TV show costumes</a> for inspiration.</p>
+            <p><strong>Funny couples</strong> — Ketchup & mustard, fork & knife, plug & socket.
+            Punny duo costumes always get laughs and are usually cheap to pull off.</p>
+            <p><strong>Scary couples</strong> — Matching horror looks like vampire and victim
+            or killer and zombie are dramatic and memorable.
+            Browse <a href="../scary-horror-costumes.html">scary costumes</a> for duo-friendly options.</p>
+            <h2>Expanding to Groups</h2>
+            <p>Got a bigger crew? Turn your couple costume into a group theme.
+            See our <a href="../group-family-costumes.html">group costumes</a> for squad-sized sets.</p>
+        """,
+    },
+    {
+        "slug":        "womens-halloween-costume-guide",
+        "title":       f"Women's Halloween Costume Guide {YEAR}",
+        "description": f"The best women's Halloween costumes for {YEAR} — sexy, scary, funny and trendy.",
+        "merchant":    "/womens-costumes.html",
+        "related": [
+            ("Women's Costumes",    "/womens-costumes-2026.html"),
+            ("Sexy Costumes",       "/sexy-adult-costumes.html"),
+            ("Plus Size Costumes",  "/best-plussize-costumes.html"),
+            ("Gothic Costumes",     "/best-gothic-costumes.html"),
+            ("Witch Costumes",      "/best-witchaesthetic-costumes.html"),
+        ],
+        "body": f"""
+            <p>Finding the perfect women's Halloween costume in {YEAR} has never been easier —
+            or harder, given how many amazing options exist. Our guide breaks it down by style
+            so you can find exactly what you're looking for.</p>
+            <h2>Trending Women's Costume Styles for {YEAR}</h2>
+            <p><strong>Witch & gothic</strong> — Always in fashion. Modern witch aesthetics have
+            gone far beyond the pointy hat — think dark cottagecore, celestial, and high-fashion
+            witch looks. See <a href="../best-witchaesthetic-costumes.html">witch aesthetic costumes</a>.</p>
+            <p><strong>Sexy Halloween costumes</strong> — A perennial category.
+            Browse <a href="../sexy-adult-costumes.html">sexy adult costumes</a> for a huge range
+            of styles from classic to contemporary.</p>
+            <p><strong>Plus size</strong> — Every style available in extended sizing.
+            See <a href="../best-plussize-costumes.html">plus size Halloween costumes</a>
+            for the full inclusive collection.</p>
+            <p><strong>Pop culture</strong> — Whatever's trending on screen, in music, or online
+            becomes a top women's costume pick. Updated daily at
+            <a href="../womens-costumes-2026.html">women's Halloween costumes</a>.</p>
+            <h2>How to Pick the Right Size</h2>
+            <p>Always check the size chart before ordering — costume sizing runs differently
+            from regular clothing. HalloweenCostumes.com includes detailed size charts on
+            every product page.</p>
+        """,
+    },
+    {
+        "slug":        "group-halloween-costume-ideas",
+        "title":       f"Group Halloween Costume Ideas {YEAR}",
+        "description": f"The best group Halloween costume ideas for {YEAR} — squads of 3, 4, 5 and more.",
+        "merchant":    "/group-costume-ideas.html",
+        "related": [
+            ("Group Costumes",         "/group-family-costumes.html"),
+            ("Couples Costumes",       "/matching-couples-costumes.html"),
+            ("Friends Costumes",       "/best-friendscostume-costumes.html"),
+            ("Matching Family",        "/best-matchingfamily-costumes.html"),
+            ("TV Show Costumes",       "/best-tvshows-costumes.html"),
+        ],
+        "body": f"""
+            <p>Group costumes are one of the best parts of Halloween — when everyone shows up
+            coordinated, it's always the most memorable look of the night. Here are the
+            best group Halloween costume ideas for {YEAR}.</p>
+            <h2>Group Costume Ideas by Size</h2>
+            <p><strong>Groups of 2 (couples)</strong> — See our full
+            <a href="../matching-couples-costumes.html">couples costumes</a> guide
+            for duo-specific ideas.</p>
+            <p><strong>Groups of 3–4</strong> — Try TV show casts, movie ensembles, or themed
+            color palettes (e.g. Teletubbies, Ninja Turtles, Powerpuff Girls).
+            Browse <a href="../best-tvshows-costumes.html">TV show costumes</a> for ready-made groups.</p>
+            <p><strong>Groups of 5+</strong> — Large groups work best with a clear theme:
+            decades (70s, 80s, 90s), card suits, or the seven deadly sins.
+            See <a href="../best-decades-costumes.html">decades costumes</a> for retro group ideas.</p>
+            <p><strong>Family groups</strong> — Parents and kids together? Check
+            <a href="../best-matchingfamily-costumes.html">matching family costumes</a> for
+            coordinated sets across all ages.</p>
+            <h2>Pro Tips for Group Costumes</h2>
+            <p>Order everyone's costumes at the same time to guarantee consistent sizing and
+            delivery. Designate one person to coordinate — group orders can ship together
+            for easy tracking.</p>
+        """,
+    },
 ]
 
 def build_blog():
     blog_dir = os.path.join(OUTPUT_DIR, "blog")
     os.makedirs(blog_dir, exist_ok=True)
 
+    # ── Blog index ──────────────────────────────────────────
     items = "\n".join(
-        f'<li><a href="{a["slug"]}.html">{a["title"]}</a> — {a["description"]}</li>'
+        f'<li><a href="{a["slug"]}.html"><strong>{a["title"]}</strong></a> — {a["description"]}</li>'
         for a in BLOG_ARTICLES
     )
     index_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Halloween Costume Blog | {SITE_NAME}</title>
-  <meta name="description" content="Halloween costume tips, guides and ideas for {YEAR}.">
+  <title>Halloween Costume Blog {YEAR} | {SITE_NAME}</title>
+  <meta name="description" content="Halloween costume tips, guides and ideas for {YEAR}. Expert advice on every category.">
   <link rel="canonical" href="{SITE_URL}/blog/index.html">
   <style>{SHARED_CSS}</style>
 </head>
@@ -507,48 +743,107 @@ def build_blog():
   <header><h1>🎃 {SITE_NAME}</h1><p>Halloween Costume Blog</p></header>
   <main>
     <h1>Halloween Costume Blog {YEAR}</h1>
-    <p>Tips, guides, and costume ideas for {YEAR}.</p>
-    <ul>{items}</ul>
-    <p><a href="../index.html">← Back to Main Store</a></p>
+    <p>Expert tips, buying guides, and costume ideas for {YEAR}. Updated regularly with the latest trends.</p>
+    <ul style="line-height:2.2;">{items}</ul>
+    <br>
+    <center>
+      <a href="{aff("/")}" class="cta-btn" target="_blank" rel="nofollow noopener">
+        Shop All Halloween Costumes {YEAR} ➔
+      </a>
+    </center>
+    <p style="margin-top:2rem;"><a href="../index.html">🏠 Back to Main Store</a></p>
   </main>
-  <footer><p>&copy; {YEAR} {OWNER} | Powered by Vulture Engine</p></footer>
+  <footer>
+    <p>&copy; {YEAR} {OWNER} | Affiliate Platform Portfolio | Powered by Vulture Engine</p>
+    <p style="font-size:.75rem;color:#bbb;">Affiliate links — we earn a commission at no extra cost to you.</p>
+  </footer>
 </body></html>"""
 
     with open(os.path.join(blog_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(index_html)
     print("  ✔  blog/index.html")
 
+    # ── Blog posts ──────────────────────────────────────────
     for a in BLOG_ARTICLES:
         cta_url = aff(a.get("merchant", "/"))
+        title   = a["title"]
+        desc    = a["description"]
+        slug    = a["slug"]
+        body    = a["body"]
+
+        # Related links section
+        related_items = ""
+        for label, href in a.get("related", []):
+            related_items += f'<li><a href="../{href.lstrip("/")}">{label}</a></li>'
+        related_html = f"""
+        <div class="related-links">
+          <h2>Related Categories</h2>
+          <ul>{related_items}</ul>
+        </div>""" if related_items else ""
+
+        # Nav (links back to main store pages)
+        nav_links = "\n      ".join(
+            f'<a href="../{p["filename"]}" class="nav-link">{p["emoji"]} {p["label"]}</a>'
+            for p in PAGES
+        )
+
         post_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>{a['title']} | {SITE_NAME}</title>
-  <meta name="description" content="{a['description']}">
-  <link rel="canonical" href="{SITE_URL}/blog/{a['slug']}.html">
+  <title>{title} | {SITE_NAME}</title>
+  <meta name="description" content="{desc}">
+  <link rel="canonical" href="{SITE_URL}/blog/{slug}.html">
+  <meta property="og:title"       content="{title} | {SITE_NAME}">
+  <meta property="og:description" content="{desc}">
+  <meta property="og:url"         content="{SITE_URL}/blog/{slug}.html">
+  <meta property="og:type"        content="article">
   <style>{SHARED_CSS}</style>
 </head>
 <body>
   <header><h1>🎃 {SITE_NAME}</h1><p>The World's #1 Halloween Store</p></header>
+
+  <div class="nav-zone">
+    <div class="nav-label">Browse All Categories</div>
+    <nav>
+      {nav_links}
+    </nav>
+  </div>
+
   <main>
-    <h1>{a['title']}</h1>
-    {a['body']}
+    <h1>{title}</h1>
+
     <center>
       <a href="{cta_url}" class="cta-btn" target="_blank" rel="nofollow noopener">
-        Shop {a['title']} ➔
+        Shop {title} ➔
       </a>
     </center>
-    <p style="margin-top:2rem;"><a href="index.html">← Back to Blog</a> &nbsp;|&nbsp; <a href="../index.html">🏠 Main Store</a></p>
+
+    {body}
+
+    <center>
+      <a href="{cta_url}" class="cta-btn" target="_blank" rel="nofollow noopener">
+        Shop {title} at HalloweenCostumes.com ➔
+      </a>
+    </center>
+
+    {related_html}
+
+    <p style="margin-top:2rem; font-size:.9rem;">
+      <a href="index.html">← Back to Blog</a> &nbsp;|&nbsp;
+      <a href="../index.html">🏠 Main Store</a>
+    </p>
   </main>
+
   <footer>
-    <p>&copy; {YEAR} {OWNER} | Powered by Vulture Engine</p>
-    <p style="font-size:.75rem;color:#bbb;">Affiliate links — we earn a commission at no extra cost to you.</p>
+    <p>&copy; {YEAR} {OWNER} | Affiliate Platform Portfolio | Powered by Vulture Engine</p>
+    <p style="font-size:.75rem;color:#bbb;">This site contains affiliate links. We earn a commission when you purchase through our links, at no extra cost to you.</p>
   </footer>
 </body></html>"""
-        with open(os.path.join(blog_dir, f"{a['slug']}.html"), "w", encoding="utf-8") as f:
+
+        with open(os.path.join(blog_dir, f"{slug}.html"), "w", encoding="utf-8") as f:
             f.write(post_html)
-        print(f"  ✔  blog/{a['slug']}.html")
+        print(f"  ✔  blog/{slug}.html")
 
 
 # =========================================================
