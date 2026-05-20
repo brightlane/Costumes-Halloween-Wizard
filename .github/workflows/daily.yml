@@ -42,9 +42,9 @@ jobs:
         with:
           name: site-build
           path: dist/
+          overwrite: true
 
       - name: Deploy to GitHub Pages
-        if: success()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
