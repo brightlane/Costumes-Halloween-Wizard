@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /dist/
+
+Sitemap: https://brightlane.github.io/Costumes-Halloween-Wizard/sitemap.xml
