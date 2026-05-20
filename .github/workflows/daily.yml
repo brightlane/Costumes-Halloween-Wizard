@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -37,15 +39,17 @@ jobs:
       - name: Validate output
         run: python scripts/validate_output.py
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-build
-          path: dist/
-          overwrite: true
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+      - name: Deploy to gh-pages
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add -f dist/
+          git stash
+          git checkout gh-pages || git checkout --orphan gh-pages
+          git rm -rf . || true
+          git stash pop
+          cp -r dist/* .
+          rm -rf dist/
+          git add .
+          git commit -m "deploy: $(git rev-parse --short HEAD~1 2>/dev/null || echo 'init')"
+          git push origin gh-pages --force
